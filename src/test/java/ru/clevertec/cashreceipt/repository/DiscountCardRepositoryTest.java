@@ -27,7 +27,7 @@ class DiscountCardRepositoryTest {
                 "2, 5",
                 "3, 15"
         })
-        void willSelectDiscountCardById(Long cardId, Integer discountPercent) {
+        void checkSelectDiscountCardByIdShouldReturnDiscountCard(Long cardId, Integer discountPercent) {
             //given
             DiscountCard expectedDiscountCard = DiscountCard.builder()
                     .discountCardId(cardId)
@@ -46,7 +46,7 @@ class DiscountCardRepositoryTest {
         @CsvSource(value = {
                 "1", "2", "3"
         })
-        void willNotSelectDiscountCardById(Long discountCardId) {
+        void checkSelectDiscountCardByIdShouldNotReturnDiscountCard(Long discountCardId) {
             //when
             Optional<DiscountCard> expectedCard = underTest.selectById(discountCardId);
 
