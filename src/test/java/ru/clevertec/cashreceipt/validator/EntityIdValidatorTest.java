@@ -1,37 +1,30 @@
 package ru.clevertec.cashreceipt.validator;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class EntityIdValidatorTest {
 
-    @Test
-    void isEntityIdValidWillReturnTrue() {
-        //given
-        String validId = "1";
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1", "55", "100"
+    })
+    void checkIsEntityIdValidShouldReturnTrue(String id) {
         //when
-        boolean condition = EntityIdValidator.isEntityIdValid(validId);
+        boolean condition = EntityIdValidator.isEntityIdValid(id);
         //then
         assertThat(condition).isTrue();
     }
 
-    @Test
-    void isEntityIdValidWillReturnFalse() {
-        //given
-        String invalidId = "1.25";
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1.25", "1d", "1-2"
+    })
+    void checkIsEntityIdValidShouldReturnFalse(String id) {
         //when
-        boolean condition = EntityIdValidator.isEntityIdValid(invalidId);
-        //then
-        assertThat(condition).isFalse();
-    }
-
-    @Test
-    void isEntityIdValidWillReturnFalseBecauseOfNullString() {
-        //given
-        String nullString = null;
-        //when
-        boolean condition = EntityIdValidator.isEntityIdValid(nullString);
+        boolean condition = EntityIdValidator.isEntityIdValid(id);
         //then
         assertThat(condition).isFalse();
     }
