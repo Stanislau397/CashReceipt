@@ -1,7 +1,9 @@
 package ru.clevertec.cashreceipt.repository;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
@@ -16,29 +18,41 @@ class DiscountCardRepositoryTest {
     @Autowired
     private DiscountCardRepository underTest;
 
-    @Test
-    void willSelectDiscountCardById() {
-        //given
-        Long discountCardId = 1L;
-        DiscountCard discountCard = DiscountCard.builder()
-                .discountCardId(discountCardId)
-                .discountPercent(10)
-                .build();
-        underTest.save(discountCard);
-        //when
-        Optional<DiscountCard> expectedCard = underTest.selectById(discountCardId);
-        //then
-        assertThat(expectedCard).isEqualTo(Optional.of(discountCard));
-    }
+    @Nested
+    class SelectDiscountCardByIdTest {
 
-    @Test
-    void willNotSelectDiscountCardById() {
-        //given
-        Long discountCardId = 2L;
-        //when
-        Optional<DiscountCard> expectedCard = underTest.selectById(discountCardId);
-        //then
-        assertThat(expectedCard).isEqualTo(Optional.empty());
+        @ParameterizedTest
+        @CsvSource(value = {
+                "1, 10",
+                "2, 5",
+                "3, 15"
+        })
+        void willSelectDiscountCardById(Long cardId, Integer discountPercent) {
+            //given
+            DiscountCard expectedDiscountCard = DiscountCard.builder()
+                    .discountCardId(cardId)
+                    .discountPercent(discountPercent)
+                    .build();
+            underTest.save(expectedDiscountCard);
+
+            //when
+            Optional<DiscountCard> actualDiscountCard = underTest.selectById(cardId);
+
+            //then
+            assertThat(actualDiscountCard).isEqualTo(Optional.of(expectedDiscountCard));
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {
+                "1", "2", "3"
+        })
+        void willNotSelectDiscountCardById(Long discountCardId) {
+            //when
+            Optional<DiscountCard> expectedCard = underTest.selectById(discountCardId);
+
+            //then
+            assertThat(expectedCard).isEmpty();
+        }
     }
 
     @AfterEach
