@@ -53,7 +53,7 @@ class ProductRepositoryTest {
         @CsvSource(value = {
                 "1", "2"
         })
-        void willNotSelectProductById(Long productId) {
+        void checkSelectProductByIdShouldBeEmpty(Long productId) {
             //when
             Optional<Product> expectedProduct = underTest.selectById(productId);
             //then
