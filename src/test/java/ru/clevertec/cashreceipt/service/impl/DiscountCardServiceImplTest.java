@@ -2,7 +2,9 @@ package ru.clevertec.cashreceipt.service.impl;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
@@ -37,42 +39,59 @@ class DiscountCardServiceImplTest {
         autoCloseable.close();
     }
 
-    @Test
-    void willFindDiscountCardById() {
-        //given
-        Long cardId = 1L;
-        DiscountCard discountCard = DiscountCard.builder()
-                .discountCardId(cardId)
-                .discountPercent(10)
-                .build();
-        //when
-        when(discountCardRepository.selectById(cardId)).thenReturn(Optional.of(discountCard));
-        //then
-        DiscountCard expectedCard = underTest.findDiscountCardById(String.valueOf(cardId));
-        assertThat(expectedCard).isEqualTo(discountCard);
-    }
+    @Nested
+    class FindDiscountCardByIdTest {
 
-    @Test
-    void findDiscountCardByIdWillThrowEntityNotFoundException() {
-        //given
-        Long cardId = 1L;
-        //when
-        when(discountCardRepository.selectById(cardId)).thenReturn(Optional.empty());
-        //then
-        assertThatThrownBy(() -> underTest.findDiscountCardById(String.valueOf(cardId)))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining(String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId));
-    }
+        @ParameterizedTest
+        @CsvSource(value = {
+                "1, 10",
+                "50, 5"
+        })
+        void checkFindDiscountCardByIdShouldReturnDiscountCard(Long cardId, Integer discountPercent) {
+            //given
+            DiscountCard expectedDiscountCard = DiscountCard.builder()
+                    .discountCardId(cardId)
+                    .discountPercent(discountPercent)
+                    .build();
 
-    @Test
-    void findDiscountCardByIdWillThrowInvalidInputException() {
-        //given
-        String invalidId = "123asd";
-        //when
-        when(discountCardRepository.selectById(1L)).thenReturn(Optional.empty());
-        //then
-        assertThatThrownBy(() -> underTest.findDiscountCardById(invalidId))
-                .isInstanceOf(InvalidInputException.class)
-                .hasMessageContaining(String.format(GIVEN_ID_IS_NOT_VALID, invalidId));
+            //when
+            when(discountCardRepository.selectById(cardId))
+                    .thenReturn(Optional.of(expectedDiscountCard));
+            DiscountCard actualDiscountCard = underTest.findDiscountCardById(String.valueOf(cardId));
+
+            //then
+            assertThat(actualDiscountCard).isEqualTo(expectedDiscountCard);
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {
+                "1",
+                "2"
+        })
+        void checkFindDiscountCardByIdShouldThrowEntityNotFoundException(Long cardId) {
+            //when
+            when(discountCardRepository.selectById(cardId))
+                    .thenReturn(Optional.empty());
+
+            //then
+            assertThatThrownBy(() -> underTest.findDiscountCardById(String.valueOf(cardId)))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId));
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {
+                "1-1",
+                "abc"
+        })
+        void checkFindDiscountCardByIdShouldThrowInvalidInputException(String cardId) {
+            //when
+            when(discountCardRepository.selectById(1L)).thenReturn(Optional.empty());
+
+            //then
+            assertThatThrownBy(() -> underTest.findDiscountCardById(cardId))
+                    .isInstanceOf(InvalidInputException.class)
+                    .hasMessage(String.format(GIVEN_ID_IS_NOT_VALID, cardId));
+        }
     }
 }
