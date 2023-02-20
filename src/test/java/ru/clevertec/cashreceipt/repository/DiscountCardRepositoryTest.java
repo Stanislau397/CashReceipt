@@ -3,10 +3,11 @@ package ru.clevertec.cashreceipt.repository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
+import ru.clevertec.cashreceipt.util.impl.DiscountCardTestBuilder;
 
 import java.util.Optional;
 
@@ -22,16 +23,11 @@ class DiscountCardRepositoryTest {
     class SelectDiscountCardByIdTest {
 
         @ParameterizedTest
-        @CsvSource(value = {
-                "1, 10",
-                "2, 5",
-                "3, 15"
-        })
-        void checkSelectDiscountCardByIdShouldReturnDiscountCard(Long cardId, Integer discountPercent) {
+        @ValueSource(longs = {1, 2, 3})
+        void checkSelectDiscountCardByIdShouldReturnDiscountCard(Long cardId) {
             //given
-            DiscountCard expectedDiscountCard = DiscountCard.builder()
-                    .discountCardId(cardId)
-                    .discountPercent(discountPercent)
+            DiscountCard expectedDiscountCard = DiscountCardTestBuilder.aDiscountCard()
+                    .withDiscountCardId(cardId)
                     .build();
             underTest.save(expectedDiscountCard);
 
@@ -43,9 +39,7 @@ class DiscountCardRepositoryTest {
         }
 
         @ParameterizedTest
-        @CsvSource(value = {
-                "1", "2", "3"
-        })
+        @ValueSource(longs = {1, 2, 3})
         void checkSelectDiscountCardByIdShouldNotReturnDiscountCard(Long discountCardId) {
             //when
             Optional<DiscountCard> expectedCard = underTest.selectById(discountCardId);
