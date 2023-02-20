@@ -10,6 +10,7 @@ import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.util.impl.DiscountCardTestBuilder;
 
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

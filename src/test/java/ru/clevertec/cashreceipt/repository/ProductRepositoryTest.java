@@ -28,12 +28,12 @@ class ProductRepositoryTest {
     @Nested
     class SelectProductByIdTest {
 
-        static LongStream cardIdProviderFactory() {
+        static LongStream productIdProviderFactory() {
             return LongStream.of(1, 2, 3);
         }
 
         @ParameterizedTest
-        @MethodSource("cardIdProviderFactory")
+        @MethodSource("productIdProviderFactory")
         void checkSelectProductByIdShouldReturnProduct(Long productId) {
             //given
             Product expectedProduct = ProductTestBuilder
@@ -50,7 +50,7 @@ class ProductRepositoryTest {
         }
 
         @ParameterizedTest
-        @MethodSource("cardIdProviderFactory")
+        @MethodSource("productIdProviderFactory")
         void checkSelectProductByIdShouldBeEmpty(Long productId) {
             //when
             Optional<Product> actualProduct = underTest.selectById(productId);
