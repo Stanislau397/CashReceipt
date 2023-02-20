@@ -3,13 +3,14 @@ package ru.clevertec.cashreceipt.repository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.util.impl.ProductTestBuilder;
 
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -27,8 +28,12 @@ class ProductRepositoryTest {
     @Nested
     class SelectProductByIdTest {
 
+        static LongStream cardIdProviderFactory() {
+            return LongStream.of(1, 2, 3);
+        }
+
         @ParameterizedTest
-        @ValueSource(longs = {1, 2})
+        @MethodSource("cardIdProviderFactory")
         void checkSelectProductByIdShouldReturnProduct(Long productId) {
             //given
             Product expectedProduct = ProductTestBuilder
@@ -45,7 +50,7 @@ class ProductRepositoryTest {
         }
 
         @ParameterizedTest
-        @ValueSource(longs = {1, 2})
+        @MethodSource("cardIdProviderFactory")
         void checkSelectProductByIdShouldBeEmpty(Long productId) {
             //when
             Optional<Product> actualProduct = underTest.selectById(productId);
