@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
@@ -12,8 +12,10 @@ import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.exception.InvalidInputException;
 import ru.clevertec.cashreceipt.repository.DiscountCardRepository;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
+import ru.clevertec.cashreceipt.util.impl.DiscountCardTestBuilder;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -42,53 +44,48 @@ class DiscountCardServiceImplTest {
     @Nested
     class FindDiscountCardByIdTest {
 
+        static Stream<String> validCardIdArgumentsProvider() {
+            return Stream.of("1", "20");
+        }
+
+        static Stream<String> invalidCardIdArgumentsProvider() {
+            return Stream.of("1-1", "abc");
+        }
+
         @ParameterizedTest
-        @CsvSource(value = {
-                "1, 10",
-                "50, 5"
-        })
-        void checkFindDiscountCardByIdShouldReturnDiscountCard(Long cardId, Integer discountPercent) {
+        @MethodSource("validCardIdArgumentsProvider")
+        void checkFindDiscountCardByIdShouldReturnDiscountCard(String cardId) {
             //given
-            DiscountCard expectedDiscountCard = DiscountCard.builder()
-                    .discountCardId(cardId)
-                    .discountPercent(discountPercent)
+            DiscountCard expectedDiscountCard = DiscountCardTestBuilder
+                    .aDiscountCard()
+                    .withDiscountCardId(Long.parseLong(cardId))
                     .build();
 
             //when
-            when(discountCardRepository.selectById(cardId))
+            when(discountCardRepository.selectById(Long.parseLong(cardId)))
                     .thenReturn(Optional.of(expectedDiscountCard));
-            DiscountCard actualDiscountCard = underTest.findDiscountCardById(String.valueOf(cardId));
+            DiscountCard actualDiscountCard = underTest.findDiscountCardById(cardId);
 
             //then
             assertThat(actualDiscountCard).isEqualTo(expectedDiscountCard);
         }
 
         @ParameterizedTest
-        @CsvSource(value = {
-                "1",
-                "2"
-        })
-        void checkFindDiscountCardByIdShouldThrowEntityNotFoundException(Long cardId) {
+        @MethodSource("validCardIdArgumentsProvider")
+        void checkFindDiscountCardByIdShouldThrowEntityNotFoundException(String cardId) {
             //when
-            when(discountCardRepository.selectById(cardId))
+            when(discountCardRepository.selectById(Long.parseLong(cardId)))
                     .thenReturn(Optional.empty());
 
             //then
-            assertThatThrownBy(() -> underTest.findDiscountCardById(String.valueOf(cardId)))
+            assertThatThrownBy(() -> underTest.findDiscountCardById(cardId))
                     .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId));
+                    .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, Long.parseLong(cardId)));
         }
 
         @ParameterizedTest
-        @CsvSource(value = {
-                "1-1",
-                "abc"
-        })
+        @MethodSource("invalidCardIdArgumentsProvider")
         void checkFindDiscountCardByIdShouldThrowInvalidInputException(String cardId) {
-            //when
-            when(discountCardRepository.selectById(1L)).thenReturn(Optional.empty());
-
-            //then
             assertThatThrownBy(() -> underTest.findDiscountCardById(cardId))
                     .isInstanceOf(InvalidInputException.class)
                     .hasMessage(String.format(GIVEN_ID_IS_NOT_VALID, cardId));
