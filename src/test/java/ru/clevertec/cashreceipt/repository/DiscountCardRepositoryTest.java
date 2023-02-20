@@ -42,10 +42,10 @@ class DiscountCardRepositoryTest {
         @ValueSource(longs = {1, 2, 3})
         void checkSelectDiscountCardByIdShouldNotReturnDiscountCard(Long discountCardId) {
             //when
-            Optional<DiscountCard> expectedCard = underTest.selectById(discountCardId);
+            Optional<DiscountCard> actualDiscountCard = underTest.selectById(discountCardId);
 
             //then
-            assertThat(expectedCard).isEmpty();
+            assertThat(actualDiscountCard).isEmpty();
         }
     }
 
