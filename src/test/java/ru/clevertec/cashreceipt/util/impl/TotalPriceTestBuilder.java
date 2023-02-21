@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 @ToString
 public class TotalPriceTestBuilder implements TestBuilder<TotalPrice> {
 
-    private BigDecimal itemTotal = BigDecimal.ZERO;
-    private BigDecimal discount = BigDecimal.ZERO;
-    private BigDecimal subtotal = BigDecimal.ZERO;
+    private BigDecimal itemTotal = BigDecimal.valueOf(100);
+    private BigDecimal discount = BigDecimal.valueOf(10);
+    private BigDecimal subtotal = BigDecimal.valueOf(90);
 
     @Override
     public TotalPrice build() {
