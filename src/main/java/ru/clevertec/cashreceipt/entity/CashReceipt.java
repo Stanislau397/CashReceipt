@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Setter
 @Getter
 @EqualsAndHashCode
 @ToString
