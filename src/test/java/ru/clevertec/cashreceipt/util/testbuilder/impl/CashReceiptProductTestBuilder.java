@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.util.impl;
+package ru.clevertec.cashreceipt.util.testbuilder.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -8,7 +8,7 @@ import lombok.With;
 import ru.clevertec.cashreceipt.entity.CashReceiptProduct;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
-import ru.clevertec.cashreceipt.util.TestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.TestBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor(staticName = "aCashReceiptProduct")
@@ -27,10 +27,10 @@ public class CashReceiptProductTestBuilder implements TestBuilder<CashReceiptPro
 
     @Override
     public CashReceiptProduct build() {
-        final CashReceiptProduct cashReceiptProduct = new CashReceiptProduct();
-        cashReceiptProduct.setProduct(product);
-        cashReceiptProduct.setQuantity(quantity);
-        cashReceiptProduct.setTotalPrice(totalPrice);
-        return cashReceiptProduct;
+        return CashReceiptProduct.builder()
+                .product(product)
+                .quantity(quantity)
+                .totalPrice(totalPrice)
+                .build();
     }
 }

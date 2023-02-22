@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.util.impl;
+package ru.clevertec.cashreceipt.util.testbuilder.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.With;
 import ru.clevertec.cashreceipt.entity.Supermarket;
-import ru.clevertec.cashreceipt.util.TestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.TestBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor(staticName = "aSupermarket")
@@ -21,10 +21,10 @@ public class SuperMarketTestBuilder implements TestBuilder<Supermarket> {
 
     @Override
     public Supermarket build() {
-        final Supermarket supermarket = new Supermarket();
-        supermarket.setName(name);
-        supermarket.setAddress(address);
-        supermarket.setPhoneNumber(phoneNumber);
-        return supermarket;
+        return Supermarket.builder()
+                .name(name)
+                .address(address)
+                .phoneNumber(phoneNumber)
+                .build();
     }
 }

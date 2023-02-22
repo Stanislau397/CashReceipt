@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.util.impl;
+package ru.clevertec.cashreceipt.util.testbuilder.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.With;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
-import ru.clevertec.cashreceipt.util.TestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.TestBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor(staticName = "aDiscountCard")
@@ -20,9 +20,9 @@ public class DiscountCardTestBuilder implements TestBuilder<DiscountCard> {
 
     @Override
     public DiscountCard build() {
-        final DiscountCard discountCard = new DiscountCard();
-        discountCard.setDiscountCardId(discountCardId);
-        discountCard.setDiscountPercent(discountPercent);
-        return discountCard;
+        return DiscountCard.builder()
+                .discountCardId(discountCardId)
+                .discountPercent(discountPercent)
+                .build();
     }
 }

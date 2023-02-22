@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.util;
+package ru.clevertec.cashreceipt.util.testbuilder;
 
 public interface TestBuilder<T> {
 

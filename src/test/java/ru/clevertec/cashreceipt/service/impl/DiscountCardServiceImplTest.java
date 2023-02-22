@@ -12,7 +12,7 @@ import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.exception.InvalidInputException;
 import ru.clevertec.cashreceipt.repository.DiscountCardRepository;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
-import ru.clevertec.cashreceipt.util.impl.DiscountCardTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.DiscountCardTestBuilder;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -73,11 +73,6 @@ class DiscountCardServiceImplTest {
         @ParameterizedTest
         @MethodSource("validCardIdArgumentsProvider")
         void checkFindDiscountCardByIdShouldThrowEntityNotFoundException(String cardId) {
-            //when
-            when(discountCardRepository.selectById(Long.parseLong(cardId)))
-                    .thenReturn(Optional.empty());
-
-            //then
             assertThatThrownBy(() -> underTest.findDiscountCardById(cardId))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, Long.parseLong(cardId)));

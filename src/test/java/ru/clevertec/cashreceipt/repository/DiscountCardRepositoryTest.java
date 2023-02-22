@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
-import ru.clevertec.cashreceipt.util.impl.DiscountCardTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.DiscountCardTestBuilder;
 
 import java.util.Optional;
 import java.util.stream.LongStream;

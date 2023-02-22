@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.util.impl;
+package ru.clevertec.cashreceipt.util.testbuilder.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.With;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
-import ru.clevertec.cashreceipt.util.TestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.TestBuilder;
 
 import java.math.BigDecimal;
 
@@ -23,10 +23,10 @@ public class TotalPriceTestBuilder implements TestBuilder<TotalPrice> {
 
     @Override
     public TotalPrice build() {
-        final TotalPrice totalPrice = new TotalPrice();
-        totalPrice.setItemTotal(itemTotal);
-        totalPrice.setDiscount(discount);
-        totalPrice.setSubtotal(subtotal);
-        return totalPrice;
+        return TotalPrice.builder()
+                .itemTotal(itemTotal)
+                .discount(discount)
+                .subtotal(subtotal)
+                .build();
     }
 }

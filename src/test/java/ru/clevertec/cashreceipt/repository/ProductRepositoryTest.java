@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.clevertec.cashreceipt.entity.Product;
-import ru.clevertec.cashreceipt.util.impl.ProductTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.ProductTestBuilder;
 
 import java.util.Optional;
 import java.util.stream.LongStream;

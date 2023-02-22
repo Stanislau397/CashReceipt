@@ -17,10 +17,10 @@ import ru.clevertec.cashreceipt.entity.TotalPrice;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
 import ru.clevertec.cashreceipt.service.ProductService;
-import ru.clevertec.cashreceipt.util.impl.CashReceiptProductTestBuilder;
-import ru.clevertec.cashreceipt.util.impl.DiscountCardTestBuilder;
-import ru.clevertec.cashreceipt.util.impl.ProductTestBuilder;
-import ru.clevertec.cashreceipt.util.impl.TotalPriceTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.CashReceiptProductTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.DiscountCardTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.ProductTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.TotalPriceTestBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;

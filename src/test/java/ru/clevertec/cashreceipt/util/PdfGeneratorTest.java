@@ -14,9 +14,9 @@ import org.mockito.Mockito;
 import ru.clevertec.cashreceipt.entity.CashReceiptProduct;
 import ru.clevertec.cashreceipt.entity.Supermarket;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
-import ru.clevertec.cashreceipt.util.impl.CashReceiptProductTestBuilder;
-import ru.clevertec.cashreceipt.util.impl.SuperMarketTestBuilder;
-import ru.clevertec.cashreceipt.util.impl.TotalPriceTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.CashReceiptProductTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.SuperMarketTestBuilder;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.TotalPriceTestBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
