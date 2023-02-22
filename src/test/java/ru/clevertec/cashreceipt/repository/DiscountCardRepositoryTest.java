@@ -18,11 +18,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class DiscountCardRepositoryTest {
 
     @Autowired
-    private DiscountCardRepository underTest;
+    private DiscountCardRepository discountCardRepository;
 
     @AfterEach
     void tearDown() {
-        underTest.deleteAll();
+        discountCardRepository.deleteAll();
     }
 
     @Nested
@@ -39,10 +39,10 @@ class DiscountCardRepositoryTest {
             DiscountCard expectedDiscountCard = DiscountCardTestBuilder.aDiscountCard()
                     .withDiscountCardId(cardId)
                     .build();
-            underTest.save(expectedDiscountCard);
+            discountCardRepository.save(expectedDiscountCard);
 
             //when
-            Optional<DiscountCard> actualDiscountCard = underTest.selectById(cardId);
+            Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(cardId);
 
             //then
             assertThat(actualDiscountCard).isEqualTo(Optional.of(expectedDiscountCard));
@@ -52,7 +52,7 @@ class DiscountCardRepositoryTest {
         @MethodSource("cardIdArgumentProvider")
         void checkSelectDiscountCardByIdShouldNotReturnDiscountCard(Long cardId) {
             //when
-            Optional<DiscountCard> actualDiscountCard = underTest.selectById(cardId);
+            Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(cardId);
 
             //then
             assertThat(actualDiscountCard).isEmpty();

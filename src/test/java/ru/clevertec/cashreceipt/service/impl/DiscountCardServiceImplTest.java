@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.GIVEN_ID_IS_NOT_VALID;
 
@@ -27,13 +27,13 @@ class DiscountCardServiceImplTest {
 
     @Mock
     private DiscountCardRepository discountCardRepository;
-    private DiscountCardService underTest;
+    private DiscountCardService discountCardService;
     private AutoCloseable autoCloseable;
 
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        underTest = new DiscountCardServiceImpl(discountCardRepository);
+        discountCardService = new DiscountCardServiceImpl(discountCardRepository);
     }
 
     @AfterEach
@@ -62,9 +62,10 @@ class DiscountCardServiceImplTest {
                     .build();
 
             //when
-            when(discountCardRepository.selectById(Long.parseLong(cardId)))
-                    .thenReturn(Optional.of(expectedDiscountCard));
-            DiscountCard actualDiscountCard = underTest.findDiscountCardById(cardId);
+            doReturn(Optional.of(expectedDiscountCard))
+                    .when(discountCardRepository).selectById(Long.parseLong(cardId));
+
+            DiscountCard actualDiscountCard = discountCardService.findDiscountCardById(cardId);
 
             //then
             assertThat(actualDiscountCard).isEqualTo(expectedDiscountCard);
@@ -73,7 +74,7 @@ class DiscountCardServiceImplTest {
         @ParameterizedTest
         @MethodSource("validCardIdArgumentsProvider")
         void checkFindDiscountCardByIdShouldThrowEntityNotFoundException(String cardId) {
-            assertThatThrownBy(() -> underTest.findDiscountCardById(cardId))
+            assertThatThrownBy(() -> discountCardService.findDiscountCardById(cardId))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, Long.parseLong(cardId)));
         }
@@ -81,7 +82,7 @@ class DiscountCardServiceImplTest {
         @ParameterizedTest
         @MethodSource("invalidCardIdArgumentsProvider")
         void checkFindDiscountCardByIdShouldThrowInvalidInputException(String cardId) {
-            assertThatThrownBy(() -> underTest.findDiscountCardById(cardId))
+            assertThatThrownBy(() -> discountCardService.findDiscountCardById(cardId))
                     .isInstanceOf(InvalidInputException.class)
                     .hasMessage(String.format(GIVEN_ID_IS_NOT_VALID, cardId));
         }

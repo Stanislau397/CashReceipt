@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.PRODUCT_BY_GIVEN_ID_NOT_FOUND;
 
 @DataJpaTest
@@ -40,12 +40,12 @@ class ProductServiceImplTest {
     @Mock
     private ProductRepository productRepository;
     private AutoCloseable autoCloseable;
-    private ProductService underTest;
+    private ProductService productService;
 
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        underTest = new ProductServiceImpl(productRepository);
+        productService = new ProductServiceImpl(productRepository);
     }
 
     @AfterEach
@@ -70,9 +70,10 @@ class ProductServiceImplTest {
                     .build();
 
             //when
-            when(productRepository.selectById(productId))
-                    .thenReturn(Optional.of(expectedProduct));
-            Product actualProduct = underTest.findProductById(productId);
+            doReturn(Optional.of(expectedProduct))
+                    .when(productRepository).selectById(productId);
+
+            Product actualProduct = productService.findProductById(productId);
 
             //then
             assertThat(actualProduct).isEqualTo(expectedProduct);
@@ -81,7 +82,7 @@ class ProductServiceImplTest {
         @ParameterizedTest
         @MethodSource("productIdArgumentsProvider")
         void checkFindProductByIdShouldThrowEntityNotFoundException(Long productId) {
-            assertThatThrownBy(() -> underTest.findProductById(productId))
+            assertThatThrownBy(() -> productService.findProductById(productId))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessageContaining(String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId));
         }
@@ -105,7 +106,7 @@ class ProductServiceImplTest {
 
             //when
             BigDecimal actualPriceForAllCashReceiptProducts =
-                    underTest.calculatePriceForAllCashReceiptProducts(cashReceiptProducts);
+                    productService.calculatePriceForAllCashReceiptProducts(cashReceiptProducts);
 
             //then
             assertThat(actualPriceForAllCashReceiptProducts)
@@ -128,7 +129,7 @@ class ProductServiceImplTest {
 
             //when
             BigDecimal actualPriceForAllCashReceiptProducts =
-                    underTest.calculatePriceForAllCashReceiptProducts(cashReceiptProducts);
+                    productService.calculatePriceForAllCashReceiptProducts(cashReceiptProducts);
 
             //then
             assertThat(actualPriceForAllCashReceiptProducts)
@@ -159,7 +160,7 @@ class ProductServiceImplTest {
 
             //when
             TotalPrice actualTotalPriceForAllCashReceiptProducts =
-                    underTest.buildTotalPriceForAllCashReceiptProducts(cashReceiptProducts, discountCard);
+                    productService.buildTotalPriceForAllCashReceiptProducts(cashReceiptProducts, discountCard);
 
             //then
             assertThat(actualTotalPriceForAllCashReceiptProducts)
@@ -190,7 +191,7 @@ class ProductServiceImplTest {
 
             //when
             TotalPrice actualTotalPriceForAllCashReceiptProducts =
-                    underTest.buildTotalPriceForAllCashReceiptProducts(cashReceiptProducts, discountCard);
+                    productService.buildTotalPriceForAllCashReceiptProducts(cashReceiptProducts, discountCard);
 
             //then
             assertThat(actualTotalPriceForAllCashReceiptProducts)
@@ -245,8 +246,10 @@ class ProductServiceImplTest {
             List<CashReceiptProduct> expectedProducts = List.of(cashReceiptProduct);
 
             //when
-            when(productRepository.selectById(productId)).thenReturn(Optional.of(product));
-            List<CashReceiptProduct> actualProducts = underTest
+            doReturn(Optional.of(product))
+                    .when(productRepository).selectById(productId);
+
+            List<CashReceiptProduct> actualProducts = productService
                     .buildCashReceiptProductsByProductIdAndQuantity(productIdAndQuantityMap);
 
             //then
@@ -282,8 +285,10 @@ class ProductServiceImplTest {
             List<CashReceiptProduct> expectedProducts = List.of(cashReceiptProduct);
 
             //when
-            when(productRepository.selectById(productId)).thenReturn(Optional.of(product));
-            List<CashReceiptProduct> actualProducts = underTest
+            doReturn(Optional.of(product))
+                    .when(productRepository).selectById(productId);
+
+            List<CashReceiptProduct> actualProducts = productService
                     .buildCashReceiptProductsByProductIdAndQuantity(productIdAndQuantityMap);
 
             //then
@@ -300,7 +305,7 @@ class ProductServiceImplTest {
 
         //when
         BigDecimal actualProductsPrice =
-                underTest.calculateAllProductsPriceWithDiscount(totalPriceForAllProducts, discountForAllProducts);
+                productService.calculateAllProductsPriceWithDiscount(totalPriceForAllProducts, discountForAllProducts);
 
         //then
         assertThat(actualProductsPrice).isEqualTo(expectedProductsPrice);
@@ -314,7 +319,7 @@ class ProductServiceImplTest {
         BigDecimal expectedDiscount = BigDecimal.valueOf(1);
 
         //when
-        BigDecimal actualDiscount = underTest.calculateDiscountForAllProducts(productsTotalPrice, discountCard);
+        BigDecimal actualDiscount = productService.calculateDiscountForAllProducts(productsTotalPrice, discountCard);
 
         //then
         assertThat(actualDiscount).isEqualTo(expectedDiscount);
@@ -329,7 +334,7 @@ class ProductServiceImplTest {
         BigDecimal expectedDiscount = BigDecimal.valueOf(1);
 
         //when
-        BigDecimal actualDiscount = underTest.calculateDiscountForSingleProduct(productsTotalPrice, discount);
+        BigDecimal actualDiscount = productService.calculateDiscountForSingleProduct(productsTotalPrice, discount);
 
         //then
         assertThat(actualDiscount).isEqualTo(expectedDiscount);
@@ -343,7 +348,7 @@ class ProductServiceImplTest {
         BigDecimal expectedProductPrice = BigDecimal.valueOf(5);
 
         //when
-        BigDecimal actualProductPrice = underTest.calculateProductPriceWithDiscount(totalPrice, discountAmount);
+        BigDecimal actualProductPrice = productService.calculateProductPriceWithDiscount(totalPrice, discountAmount);
 
         //then
         assertThat(actualProductPrice).isEqualTo(expectedProductPrice);
@@ -357,7 +362,7 @@ class ProductServiceImplTest {
         BigDecimal expectedProductPriceBasedOnQuantity = BigDecimal.valueOf(25);
 
         //when
-        BigDecimal actualProductPriceBasedOnQuantity = underTest.calculateProductPriceBasedOnQuantity(quantity, productPrice);
+        BigDecimal actualProductPriceBasedOnQuantity = productService.calculateProductPriceBasedOnQuantity(quantity, productPrice);
 
         //then
         assertThat(actualProductPriceBasedOnQuantity)
@@ -382,7 +387,7 @@ class ProductServiceImplTest {
                 .build();
 
         //when
-        TotalPrice actualTotalPrice = underTest.buildTotalPriceForSingleCashReceiptProduct(itemTotal, discount, subtotal);
+        TotalPrice actualTotalPrice = productService.buildTotalPriceForSingleCashReceiptProduct(itemTotal, discount, subtotal);
 
         //then
         assertThat(actualTotalPrice).isEqualTo(expectedTotalPrice);

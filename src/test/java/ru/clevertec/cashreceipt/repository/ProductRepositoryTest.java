@@ -18,11 +18,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class ProductRepositoryTest {
 
     @Autowired
-    private ProductRepository underTest;
+    private ProductRepository productRepository;
 
     @AfterEach
     void tearDown() {
-        underTest.deleteAll();
+        productRepository.deleteAll();
     }
 
     @Nested
@@ -40,10 +40,10 @@ class ProductRepositoryTest {
                     .aProduct()
                     .withProductId(productId)
                     .build();
-            underTest.save(expectedProduct);
+            productRepository.save(expectedProduct);
 
             //when
-            Optional<Product> actualProduct = underTest.selectById(productId);
+            Optional<Product> actualProduct = productRepository.selectById(productId);
 
             //then
             assertThat(actualProduct).isEqualTo(Optional.of(expectedProduct));
@@ -53,7 +53,7 @@ class ProductRepositoryTest {
         @MethodSource("productIdProviderFactory")
         void checkSelectProductByIdShouldBeEmpty(Long productId) {
             //when
-            Optional<Product> actualProduct = underTest.selectById(productId);
+            Optional<Product> actualProduct = productRepository.selectById(productId);
             //then
             assertThat(actualProduct).isEmpty();
         }
