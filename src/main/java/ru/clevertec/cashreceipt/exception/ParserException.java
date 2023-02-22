@@ -2,9 +2,6 @@ package ru.clevertec.cashreceipt.exception;
 
 public class ParserException extends RuntimeException {
 
-    public ParserException() {
-    }
-
     public ParserException(String message) {
         super(message);
     }
