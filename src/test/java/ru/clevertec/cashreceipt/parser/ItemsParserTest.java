@@ -27,22 +27,18 @@ class ItemsParserTest {
 
     @Test
     void checkParseShouldReturn3() {
-        //given
         String[] items = {"3-5", "1-2", "2-4"};
         int expectedSize = 3;
 
-        //when
         Map<Long, Integer> actualItems = itemsParser.parse(items);
 
-        //then
         assertThat(actualItems.size()).isEqualTo(expectedSize);
     }
 
     @Test
     void checkParseShouldThrowParserException() {
-        //given
         String[] items = {"3", "1-1", "2-4"};
-        //then
+
         assertThatThrownBy(() -> itemsParser.parse(items))
                 .isInstanceOf(ParserException.class)
                 .hasMessage(COULD_NOT_PARSE_GIVEN_PARAMETER);

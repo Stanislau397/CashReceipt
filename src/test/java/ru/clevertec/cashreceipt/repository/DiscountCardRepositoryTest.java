@@ -35,26 +35,21 @@ class DiscountCardRepositoryTest {
         @ParameterizedTest
         @MethodSource("cardIdArgumentProvider")
         void checkSelectDiscountCardByIdShouldReturnDiscountCard(Long cardId) {
-            //given
             DiscountCard expectedDiscountCard = DiscountCardTestBuilder.aDiscountCard()
                     .withDiscountCardId(cardId)
                     .build();
             discountCardRepository.save(expectedDiscountCard);
 
-            //when
             Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(cardId);
 
-            //then
             assertThat(actualDiscountCard).isEqualTo(Optional.of(expectedDiscountCard));
         }
 
         @ParameterizedTest
         @MethodSource("cardIdArgumentProvider")
         void checkSelectDiscountCardByIdShouldNotReturnDiscountCard(Long cardId) {
-            //when
             Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(cardId);
 
-            //then
             assertThat(actualDiscountCard).isEmpty();
         }
     }

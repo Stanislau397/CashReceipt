@@ -20,18 +20,16 @@ class EntityIdValidatorTest {
     @ParameterizedTest
     @MethodSource("validIdArgumentsProvider")
     void checkIsEntityIdValidShouldReturnTrue(String validId) {
-        //when
         boolean condition = EntityIdValidator.isEntityIdValid(validId);
-        //then
+
         assertThat(condition).isTrue();
     }
 
     @ParameterizedTest
     @MethodSource("invalidIdArgumentsProvider")
     void checkIsEntityIdValidShouldReturnFalse(String invalidId) {
-        //when
         boolean condition = EntityIdValidator.isEntityIdValid(invalidId);
-        //then
+
         assertThat(condition).isFalse();
     }
 }

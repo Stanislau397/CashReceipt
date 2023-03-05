@@ -55,19 +55,16 @@ class DiscountCardServiceImplTest {
         @ParameterizedTest
         @MethodSource("validCardIdArgumentsProvider")
         void checkFindDiscountCardByIdShouldReturnDiscountCard(String cardId) {
-            //given
             DiscountCard expectedDiscountCard = DiscountCardTestBuilder
                     .aDiscountCard()
                     .withDiscountCardId(Long.parseLong(cardId))
                     .build();
 
-            //when
             doReturn(Optional.of(expectedDiscountCard))
                     .when(discountCardRepository).selectById(Long.parseLong(cardId));
 
             DiscountCard actualDiscountCard = discountCardService.findDiscountCardById(cardId);
 
-            //then
             assertThat(actualDiscountCard).isEqualTo(expectedDiscountCard);
         }
 

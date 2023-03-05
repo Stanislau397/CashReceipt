@@ -35,26 +35,22 @@ class ProductRepositoryTest {
         @ParameterizedTest
         @MethodSource("productIdProviderFactory")
         void checkSelectProductByIdShouldReturnProduct(Long productId) {
-            //given
             Product expectedProduct = ProductTestBuilder
                     .aProduct()
                     .withProductId(productId)
                     .build();
             productRepository.save(expectedProduct);
 
-            //when
             Optional<Product> actualProduct = productRepository.selectById(productId);
 
-            //then
             assertThat(actualProduct).isEqualTo(Optional.of(expectedProduct));
         }
 
         @ParameterizedTest
         @MethodSource("productIdProviderFactory")
         void checkSelectProductByIdShouldBeEmpty(Long productId) {
-            //when
             Optional<Product> actualProduct = productRepository.selectById(productId);
-            //then
+
             assertThat(actualProduct).isEmpty();
         }
     }

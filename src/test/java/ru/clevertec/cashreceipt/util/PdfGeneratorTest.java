@@ -74,12 +74,10 @@ class PdfGeneratorTest {
         @MethodSource("supermarketArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildHeaderShouldCaptureSupermarket(Supermarket supermarket) {
-            //given
             ArgumentCaptor<Supermarket> supermarketCaptor = ArgumentCaptor.forClass(Supermarket.class);
             String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
-            //when
             doNothing().when(pdfGenerator).buildHeader(
                     any(Document.class),
                     supermarketCaptor.capture(),
@@ -88,7 +86,6 @@ class PdfGeneratorTest {
             );
             pdfGenerator.buildHeader(document, supermarket, currentDate, currentTime);
 
-            //then
             assertThat(supermarket).isEqualTo(supermarketCaptor.getValue());
         }
 
@@ -96,12 +93,10 @@ class PdfGeneratorTest {
         @MethodSource("currentDateArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildHeaderShouldCaptureCurrentDate(String currentDate) {
-            //given
             Supermarket supermarket = SuperMarketTestBuilder.aSupermarket().build();
             String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
             ArgumentCaptor<String> currentDateCaptor = ArgumentCaptor.forClass(String.class);
 
-            //when
             doNothing().when(pdfGenerator).buildHeader(
                     any(Document.class),
                     any(Supermarket.class),
@@ -110,7 +105,6 @@ class PdfGeneratorTest {
             );
             pdfGenerator.buildHeader(document, supermarket, currentDate, currentTime);
 
-            //then
             assertThat(currentDate).isEqualTo(currentDateCaptor.getValue());
         }
 
@@ -118,12 +112,10 @@ class PdfGeneratorTest {
         @MethodSource("currentTimeArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildHeaderShouldCaptureCurrentTime(String currentTime) {
-            //given
             Supermarket supermarket = SuperMarketTestBuilder.aSupermarket().build();
             String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             ArgumentCaptor<String> currentTimeCaptor = ArgumentCaptor.forClass(String.class);
 
-            //when
             doNothing().when(pdfGenerator).buildHeader(
                     any(Document.class),
                     any(Supermarket.class),
@@ -132,22 +124,18 @@ class PdfGeneratorTest {
             );
             pdfGenerator.buildHeader(document, supermarket, currentDate, currentTime);
 
-            //then
             assertThat(currentTime).isEqualTo(currentTimeCaptor.getValue());
         }
 
         @Test
         @SneakyThrows(DocumentException.class)
         void checkBuildHeaderShouldBeCalledOneTime() {
-            //given
             Supermarket supermarket = SuperMarketTestBuilder.aSupermarket().build();
             String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
-            //when
             pdfGenerator.buildHeader(document, supermarket, currentDate, currentTime);
 
-            //then
             verify(pdfGenerator, times(1))
                     .buildHeader(document, supermarket, currentDate, currentTime);
         }
@@ -176,17 +164,14 @@ class PdfGeneratorTest {
         @MethodSource("cashReceiptProductsArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildTableShouldCaptureCashReceiptProducts(List<CashReceiptProduct> cashReceiptProducts) {
-            //given
             ArgumentCaptor<List<CashReceiptProduct>> cashReceiptProductsCaptor = ArgumentCaptor.forClass(List.class);
 
-            //when
             doNothing().when(pdfGenerator).buildTable(
                     any(Document.class),
                     cashReceiptProductsCaptor.capture()
             );
             pdfGenerator.buildTable(document, cashReceiptProducts);
 
-            //then
             assertThat(cashReceiptProducts).isEqualTo(cashReceiptProductsCaptor.getValue());
         }
 
@@ -194,9 +179,8 @@ class PdfGeneratorTest {
         @MethodSource("cashReceiptProductsArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildTableShouldBeCalledOneTime(List<CashReceiptProduct> cashReceiptProducts) {
-            //when
             pdfGenerator.buildTable(document, cashReceiptProducts);
-            //then
+
             verify(pdfGenerator, times(1))
                     .buildTable(document, cashReceiptProducts);
         }
@@ -218,13 +202,12 @@ class PdfGeneratorTest {
         @MethodSource("totalPriceForAllProductsArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildFooterShouldCaptureTotalPriceForAllProducts(TotalPrice totalPriceForAlProducts) {
-            //given
             ArgumentCaptor<TotalPrice> totalPriceCaptor = ArgumentCaptor.forClass(TotalPrice.class);
-            //when
+
             doNothing().when(pdfGenerator)
                     .buildFooter(any(Document.class), totalPriceCaptor.capture());
             pdfGenerator.buildFooter(document, totalPriceForAlProducts);
-            //then
+
             assertThat(totalPriceForAlProducts).isEqualTo(totalPriceCaptor.getValue());
         }
 
@@ -232,9 +215,8 @@ class PdfGeneratorTest {
         @MethodSource("totalPriceForAllProductsArgumentsProvider")
         @SneakyThrows(DocumentException.class)
         void checkBuildFooterShouldBeCalledOneTime(TotalPrice totalPriceForAlProducts) {
-            //when
             pdfGenerator.buildFooter(document, totalPriceForAlProducts);
-            //then
+
             verify(pdfGenerator, times(1))
                     .buildFooter(document, totalPriceForAlProducts);
         }

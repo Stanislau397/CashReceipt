@@ -63,19 +63,16 @@ class ProductServiceImplTest {
         @ParameterizedTest
         @MethodSource("productIdArgumentsProvider")
         void checkFindProductByIdShouldReturnProduct(Long productId) {
-            //given
             Product expectedProduct = ProductTestBuilder
                     .aProduct()
                     .withProductId(productId)
                     .build();
 
-            //when
             doReturn(Optional.of(expectedProduct))
                     .when(productRepository).selectById(productId);
 
             Product actualProduct = productService.findProductById(productId);
 
-            //then
             assertThat(actualProduct).isEqualTo(expectedProduct);
         }
 
@@ -93,7 +90,6 @@ class ProductServiceImplTest {
 
         @Test
         void checkShouldCalculatePriceForAllCashReceiptProductsWhenSubtotalIsPresent() {
-            //given
             TotalPrice totalPrice = TotalPriceTestBuilder
                     .aTotalPrice()
                     .build();
@@ -104,18 +100,15 @@ class ProductServiceImplTest {
             List<CashReceiptProduct> cashReceiptProducts = List.of(cashReceiptProduct);
             BigDecimal expectedPriceForAllCashReceiptProducts = BigDecimal.valueOf(90);
 
-            //when
             BigDecimal actualPriceForAllCashReceiptProducts =
                     productService.calculatePriceForAllCashReceiptProducts(cashReceiptProducts);
 
-            //then
             assertThat(actualPriceForAllCashReceiptProducts)
                     .isEqualTo(expectedPriceForAllCashReceiptProducts);
         }
 
         @Test
         void checkShouldCalculatePriceForAllCashReceiptProductsWithoutSubtotal() {
-            //given
             TotalPrice totalPrice = TotalPriceTestBuilder
                     .aTotalPrice()
                     .withSubtotal(BigDecimal.ZERO)
@@ -127,11 +120,9 @@ class ProductServiceImplTest {
             List<CashReceiptProduct> cashReceiptProducts = List.of(cashReceiptProduct);
             BigDecimal expectedPriceForAllCashReceiptProducts = BigDecimal.valueOf(100);
 
-            //when
             BigDecimal actualPriceForAllCashReceiptProducts =
                     productService.calculatePriceForAllCashReceiptProducts(cashReceiptProducts);
 
-            //then
             assertThat(actualPriceForAllCashReceiptProducts)
                     .isEqualTo(expectedPriceForAllCashReceiptProducts);
         }
@@ -142,7 +133,6 @@ class ProductServiceImplTest {
 
         @Test
         void checkShouldBuildTotalPriceForAllCashReceiptProductsWhenDiscountCardIsEmpty() {
-            //given
             TotalPrice expectedTotalPriceForAllCashReceiptProducts = TotalPriceTestBuilder
                     .aTotalPrice()
                     .withSubtotal(BigDecimal.ZERO)
@@ -158,18 +148,15 @@ class ProductServiceImplTest {
                     .withDiscountCardId(null)
                     .build();
 
-            //when
             TotalPrice actualTotalPriceForAllCashReceiptProducts =
                     productService.buildTotalPriceForAllCashReceiptProducts(cashReceiptProducts, discountCard);
 
-            //then
             assertThat(actualTotalPriceForAllCashReceiptProducts)
                     .isEqualTo(expectedTotalPriceForAllCashReceiptProducts);
         }
 
         @Test
         void checkShouldBuildTotalPriceForAllCashReceiptProductsWhenDiscountCardIsPresent() {
-            //given
             TotalPrice totalPrice = TotalPriceTestBuilder
                     .aTotalPrice()
                     .withDiscount(BigDecimal.ZERO)
@@ -189,11 +176,9 @@ class ProductServiceImplTest {
                     .aTotalPrice()
                     .build();
 
-            //when
             TotalPrice actualTotalPriceForAllCashReceiptProducts =
                     productService.buildTotalPriceForAllCashReceiptProducts(cashReceiptProducts, discountCard);
 
-            //then
             assertThat(actualTotalPriceForAllCashReceiptProducts)
                     .isEqualTo(expectedTotalPriceForAllCashReceiptProducts);
         }
@@ -225,7 +210,6 @@ class ProductServiceImplTest {
         @ParameterizedTest
         @MethodSource("productIdAndQuantityLessThan5ArgumentsProvider")
         void checkShouldBuildCashReceiptProductsWithoutDiscountByProductIdAndQuantity(Long productId, Integer quantity) {
-            //given
             Map<Long, Integer> productIdAndQuantityMap = Map.of(productId, quantity);
 
             Product product = ProductTestBuilder.aProduct().build();
@@ -245,21 +229,18 @@ class ProductServiceImplTest {
 
             List<CashReceiptProduct> expectedProducts = List.of(cashReceiptProduct);
 
-            //when
             doReturn(Optional.of(product))
                     .when(productRepository).selectById(productId);
 
             List<CashReceiptProduct> actualProducts = productService
                     .buildCashReceiptProductsByProductIdAndQuantity(productIdAndQuantityMap);
 
-            //then
             assertThat(actualProducts).isEqualTo(expectedProducts);
         }
 
         @ParameterizedTest
         @MethodSource("productIdAndQuantityGreaterThan5ArgumentsProvider")
         void checkShouldBuildCashReceiptProductsWithDiscountByProductIdAndQuantity(Long productId, Integer quantity) {
-            //given
             Map<Long, Integer> productIdAndQuantityMap = Map.of(productId, quantity);
 
             Product product = ProductTestBuilder.aProduct()
@@ -284,87 +265,70 @@ class ProductServiceImplTest {
 
             List<CashReceiptProduct> expectedProducts = List.of(cashReceiptProduct);
 
-            //when
             doReturn(Optional.of(product))
                     .when(productRepository).selectById(productId);
 
             List<CashReceiptProduct> actualProducts = productService
                     .buildCashReceiptProductsByProductIdAndQuantity(productIdAndQuantityMap);
 
-            //then
             assertThat(actualProducts).isEqualTo(expectedProducts);
         }
     }
 
     @Test
     void checkShouldCalculateAllProductsPriceWithDiscount() {
-        //given
         BigDecimal totalPriceForAllProducts = BigDecimal.valueOf(20);
         BigDecimal discountForAllProducts = BigDecimal.valueOf(15.4);
         BigDecimal expectedProductsPrice = BigDecimal.valueOf(4.6);
 
-        //when
         BigDecimal actualProductsPrice =
                 productService.calculateAllProductsPriceWithDiscount(totalPriceForAllProducts, discountForAllProducts);
 
-        //then
         assertThat(actualProductsPrice).isEqualTo(expectedProductsPrice);
     }
 
     @Test
     void checkShouldCalculateDiscountForAllProducts() {
-        //given
         BigDecimal productsTotalPrice = BigDecimal.valueOf(10);
         DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
         BigDecimal expectedDiscount = BigDecimal.valueOf(1);
 
-        //when
         BigDecimal actualDiscount = productService.calculateDiscountForAllProducts(productsTotalPrice, discountCard);
 
-        //then
         assertThat(actualDiscount).isEqualTo(expectedDiscount);
     }
 
 
     @Test
     void checkShouldCalculateDiscountForSingleProduct() {
-        //given
         BigDecimal productsTotalPrice = BigDecimal.valueOf(10);
         Integer discount = 5;
         BigDecimal expectedDiscount = BigDecimal.valueOf(1);
 
-        //when
         BigDecimal actualDiscount = productService.calculateDiscountForSingleProduct(productsTotalPrice, discount);
 
-        //then
         assertThat(actualDiscount).isEqualTo(expectedDiscount);
     }
 
     @Test
     void checkShouldCalculateProductPriceWithDiscount() {
-        //given
         BigDecimal totalPrice = BigDecimal.valueOf(10);
         BigDecimal discountAmount = BigDecimal.valueOf(5);
         BigDecimal expectedProductPrice = BigDecimal.valueOf(5);
 
-        //when
         BigDecimal actualProductPrice = productService.calculateProductPriceWithDiscount(totalPrice, discountAmount);
 
-        //then
         assertThat(actualProductPrice).isEqualTo(expectedProductPrice);
     }
 
     @Test
     void checkShouldCalculateProductPriceBasedOnQuantity() {
-        //given
         Integer quantity = 5;
         BigDecimal productPrice = BigDecimal.valueOf(5);
         BigDecimal expectedProductPriceBasedOnQuantity = BigDecimal.valueOf(25);
 
-        //when
         BigDecimal actualProductPriceBasedOnQuantity = productService.calculateProductPriceBasedOnQuantity(quantity, productPrice);
 
-        //then
         assertThat(actualProductPriceBasedOnQuantity)
                 .isEqualTo(expectedProductPriceBasedOnQuantity);
     }
@@ -379,17 +343,14 @@ class ProductServiceImplTest {
     @ParameterizedTest
     @MethodSource("totalPriceForSingleCashReceiptProductArgumentsProvider")
     void checkShouldBuildTotalPriceForSingleCashReceiptProduct(BigDecimal itemTotal, BigDecimal discount, BigDecimal subtotal) {
-        //given
         TotalPrice expectedTotalPrice = TotalPrice.builder()
                 .itemTotal(itemTotal)
                 .discount(discount)
                 .subtotal(subtotal)
                 .build();
 
-        //when
         TotalPrice actualTotalPrice = productService.buildTotalPriceForSingleCashReceiptProduct(itemTotal, discount, subtotal);
 
-        //then
         assertThat(actualTotalPrice).isEqualTo(expectedTotalPrice);
     }
 }

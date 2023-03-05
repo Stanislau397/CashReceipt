@@ -20,18 +20,16 @@ class ParameterValidatorTest {
     @ParameterizedTest
     @MethodSource("validParameterArgumentsProvider")
     void checkIsParameterValidShouldReturnTrue(String validParameter) {
-        //when
         boolean condition = ParameterValidator.isParameterValid(validParameter);
-        //then
+
         assertThat(condition).isTrue();
     }
 
     @ParameterizedTest
     @MethodSource("invalidParameterArgumentsProvider")
     void checkIsParameterValidShouldReturnFalse(String invalidParameter) {
-        //when
         boolean condition = ParameterValidator.isParameterValid(invalidParameter);
-        //then
+
         assertThat(condition).isFalse();
     }
 }
