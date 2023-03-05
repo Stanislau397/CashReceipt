@@ -1,11 +1,9 @@
 package ru.clevertec.cashreceipt.repository.impl;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
 
