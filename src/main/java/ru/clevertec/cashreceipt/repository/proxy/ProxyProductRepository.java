@@ -20,7 +20,11 @@ public class ProxyProductRepository extends ProductRepositoryImpl {
     @Override
     public Product save(Product product) {
         Product savedProduct = super.save(product);
-        return super.save(product);
+        Long productId = savedProduct.getProductId();
+        if (productCache.get(productId).isEmpty()) {
+            productCache.put(productId, savedProduct);
+        }
+        return savedProduct;
     }
 
     @Override
