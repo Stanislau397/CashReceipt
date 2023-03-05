@@ -1,13 +1,16 @@
 package ru.clevertec.cashreceipt.repository;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.clevertec.cashreceipt.entity.Product;
+import ru.clevertec.cashreceipt.util.testbuilder.impl.ProductTestBuilder;
 
-import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -17,35 +20,38 @@ class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
-    @Test
-    void willSelectProductById() {
-        //given
-        Long productId = 1L;
-        Product product = Product.builder()
-                .productId(productId)
-                .price(BigDecimal.valueOf(2.5))
-                .name("Milk")
-                .promotional(true)
-                .build();
-        productRepository.save(product);
-        //when
-        Optional<Product> expectedProduct = productRepository.selectById(productId);
-        //then
-        assertThat(expectedProduct).isEqualTo(Optional.of(product));
-    }
-
-    @Test
-    void willNotSelectProductById() {
-        //given
-        Long productId = 2L;
-        //when
-        Optional<Product> expectedProduct = productRepository.selectById(productId);
-        //then
-        assertThat(expectedProduct).isEqualTo(Optional.empty());
-    }
-
     @AfterEach
     void tearDown() {
         productRepository.deleteAll();
+    }
+
+    @Nested
+    class SelectProductByIdTest {
+
+        static LongStream productIdProviderFactory() {
+            return LongStream.of(1, 2, 3);
+        }
+
+        @ParameterizedTest
+        @MethodSource("productIdProviderFactory")
+        void checkSelectProductByIdShouldReturnProduct(Long productId) {
+            Product expectedProduct = ProductTestBuilder
+                    .aProduct()
+                    .withProductId(productId)
+                    .build();
+            productRepository.save(expectedProduct);
+
+            Optional<Product> actualProduct = productRepository.selectById(productId);
+
+            assertThat(actualProduct).isEqualTo(Optional.of(expectedProduct));
+        }
+
+        @ParameterizedTest
+        @MethodSource("productIdProviderFactory")
+        void checkSelectProductByIdShouldBeEmpty(Long productId) {
+            Optional<Product> actualProduct = productRepository.selectById(productId);
+
+            assertThat(actualProduct).isEmpty();
+        }
     }
 }
