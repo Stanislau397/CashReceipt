@@ -26,8 +26,9 @@ public class LFUCache<T> implements Cache<T> {
     @Override
     public Optional<T> get(Long key) {
         //if the key doesn't exist in the cache, return empty
+        Optional<T> value = Optional.empty();
         if (!valuesMap.containsKey(key)) {
-            return Optional.empty();
+            return value;
         }
         //if the current key is used, increment the frequency of the key
         int frequency = frequencyMap.get(key);
@@ -44,7 +45,9 @@ public class LFUCache<T> implements Cache<T> {
             frequencyToKeys.put(frequency + 1, new LinkedHashSet<>());
             frequencyToKeys.get(frequency + 1).add(key);
         }
-        return Optional.of(valuesMap.get(key));
+
+        value = Optional.of(valuesMap.get(key));
+        return value;
     }
 
     @Override
