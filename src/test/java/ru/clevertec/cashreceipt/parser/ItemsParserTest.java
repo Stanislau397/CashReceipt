@@ -20,29 +20,27 @@ class ItemsParserTest {
         itemsParser = new ItemsParser();
     }
 
-    @Test
-    void willParseItemsFromRequest() {
-        //given
-        String[] items = {"3-5", "1-2", "2-4"};
-        //when
-        Map<Long, Integer> resultMap = itemsParser.parse(items);
-        //then
-        assertThat(resultMap).isNotNull();
-        assertThat(resultMap.size()).isEqualTo(3);
-    }
-
-    @Test
-    void parseItemsWillThrowParseException() {
-        //given
-        String[] items = {"3", "1-1", "2-4"};
-        //then
-        assertThatThrownBy(() -> itemsParser.parse(items))
-                .isInstanceOf(ParserException.class)
-                .hasMessageContaining(COULD_NOT_PARSE_GIVEN_PARAMETER);
-    }
-
     @AfterEach
     void tearDown() {
         itemsParser = null;
+    }
+
+    @Test
+    void checkParseShouldReturn3() {
+        String[] items = {"3-5", "1-2", "2-4"};
+        int expectedSize = 3;
+
+        Map<Long, Integer> actualItems = itemsParser.parse(items);
+
+        assertThat(actualItems.size()).isEqualTo(expectedSize);
+    }
+
+    @Test
+    void checkParseShouldThrowParserException() {
+        String[] items = {"3", "1-1", "2-4"};
+
+        assertThatThrownBy(() -> itemsParser.parse(items))
+                .isInstanceOf(ParserException.class)
+                .hasMessage(COULD_NOT_PARSE_GIVEN_PARAMETER);
     }
 }
