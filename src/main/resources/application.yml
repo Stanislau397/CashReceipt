@@ -14,3 +14,6 @@ spring:
       mode:
       platform: postgres
       continue-on-error: true
+cache:
+  capacity: 1000
+  algorithm: LFUCache
