@@ -12,7 +12,7 @@ public class CacheFactory<T> {
     @Value(("${cache.algorithm}"))
     private String cacheAlgorithm;
 
-    Cache<T> create() {
+    public Cache<T> create() {
         Cache<T> cache = new LFUCache<>(capacity);
         if ("LRUCache".equals(cacheAlgorithm)) {
             cache = new LRUCache<>(capacity);
