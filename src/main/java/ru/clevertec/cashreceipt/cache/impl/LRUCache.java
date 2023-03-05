@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Getter
 public class LRUCache<T> implements Cache<T> {
 
     private final int capacity;
