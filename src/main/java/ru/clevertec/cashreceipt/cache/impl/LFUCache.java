@@ -45,11 +45,22 @@ public class LFUCache<T> implements Cache<T> {
 
         if (!frequencyToKeys.containsKey(frequency + 1)) {
             frequencyToKeys.put(frequency + 1, new LinkedHashSet<>());
-            frequencyToKeys.get(frequency + 1).add(key);
         }
+        frequencyToKeys.get(frequency + 1).add(key);
 
         value = Optional.of(valuesMap.get(key));
         return value;
+    }
+
+    @Override
+    public void remove(Long key) {
+        if (valuesMap.containsKey(key)) {
+            valuesMap.remove(key);
+            int frequency = frequencyMap.get(key);
+            frequencyMap.remove(key);
+            frequencyToKeys.get(frequency)
+                    .remove(key);
+        }
     }
 
     @Override

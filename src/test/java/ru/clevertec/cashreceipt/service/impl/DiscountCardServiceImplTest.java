@@ -10,7 +10,7 @@ import org.mockito.MockitoAnnotations;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.exception.InvalidInputException;
-import ru.clevertec.cashreceipt.repository.DiscountCardRepository;
+import ru.clevertec.cashreceipt.repository.proxy.ProxyDiscountCardRepository;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
 import ru.clevertec.cashreceipt.util.testbuilder.impl.DiscountCardTestBuilder;
 
@@ -26,14 +26,14 @@ import static ru.clevertec.cashreceipt.exception.ExceptionMessage.GIVEN_ID_IS_NO
 class DiscountCardServiceImplTest {
 
     @Mock
-    private DiscountCardRepository discountCardRepository;
+    private ProxyDiscountCardRepository proxyDiscountCardRepository;
     private DiscountCardService discountCardService;
     private AutoCloseable autoCloseable;
 
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        discountCardService = new DiscountCardServiceImpl(discountCardRepository);
+        discountCardService = new DiscountCardServiceImpl(proxyDiscountCardRepository);
     }
 
     @AfterEach
@@ -61,7 +61,7 @@ class DiscountCardServiceImplTest {
                     .build();
 
             doReturn(Optional.of(expectedDiscountCard))
-                    .when(discountCardRepository).selectById(Long.parseLong(cardId));
+                    .when(proxyDiscountCardRepository).selectById(Long.parseLong(cardId));
 
             DiscountCard actualDiscountCard = discountCardService.findDiscountCardById(cardId);
 
