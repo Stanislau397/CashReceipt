@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public class ProxyProductRepository extends ProductRepositoryImpl {
 
-    private final Cache<Product> productCache = new CustomCashFactory<Product>().create();
+    private Cache<Product> productCache = new CustomCashFactory<Product>().create();
 
     @Override
     public Product save(Product product) {
@@ -25,12 +25,18 @@ public class ProxyProductRepository extends ProductRepositoryImpl {
 
     @Override
     public Product update(Product product) {
-        return super.update(product);
+        Product updatedProduct = super.update(product);
+        Long productId = updatedProduct.getProductId();
+        productCache.put(productId, updatedProduct);
+        return updatedProduct;
     }
 
     @Override
     public Product delete(Product product) {
-        return super.delete(product);
+        Product deletedProduct = super.delete(product);
+        Long productId = deletedProduct.getProductId();
+        productCache.remove(productId);
+        return deletedProduct;
     }
 
     @Override

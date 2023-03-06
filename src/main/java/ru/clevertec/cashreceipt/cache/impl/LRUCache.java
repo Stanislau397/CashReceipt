@@ -31,7 +31,7 @@ public class LRUCache<T> implements Cache<T> {
         Node currentNode = nodeMap.get(key);
         if (currentNode != null) {
             removeNode(currentNode);
-            currentNode.value = value;
+            currentNode.setValue(value);
             addNode(currentNode);
         }
         if (capacity == nodeMap.size()) {
@@ -59,6 +59,12 @@ public class LRUCache<T> implements Cache<T> {
             addNode(node);
         }
         return valueOptional;
+    }
+
+    @Override
+    public void remove(Long key) {
+
+        nodeMap.remove(key);
     }
 
     public void addNode(Node node) {

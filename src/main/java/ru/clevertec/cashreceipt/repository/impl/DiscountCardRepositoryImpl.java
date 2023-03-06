@@ -10,7 +10,6 @@ import ru.clevertec.cashreceipt.repository.DiscountCardRepository;
 import java.util.Optional;
 
 @Repository
-@AllArgsConstructor
 public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
     @PersistenceContext

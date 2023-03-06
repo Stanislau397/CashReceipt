@@ -7,4 +7,6 @@ public interface Cache<T> {
     void put(Long key, T value);
 
     Optional<T> get(Long key);
+
+    void remove(Long key);
 }
