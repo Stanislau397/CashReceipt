@@ -1,5 +1,7 @@
 package ru.clevertec.cashreceipt.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -22,11 +24,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ProductRepositoryTest {
 
+    @PersistenceContext
+    private EntityManager entityManager;
     private ProductRepository productRepository;
 
     @BeforeEach
     void setUp() {
-        productRepository = new ProductRepositoryImpl();
+        productRepository = new ProductRepositoryImpl(entityManager);
     }
 
     @AfterEach

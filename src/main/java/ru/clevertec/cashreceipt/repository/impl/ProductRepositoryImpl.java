@@ -3,6 +3,7 @@ package ru.clevertec.cashreceipt.repository.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
@@ -10,6 +11,8 @@ import ru.clevertec.cashreceipt.repository.ProductRepository;
 import java.util.Optional;
 
 @Repository
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
 
     @PersistenceContext

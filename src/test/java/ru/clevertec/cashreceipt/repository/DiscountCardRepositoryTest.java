@@ -23,11 +23,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class DiscountCardRepositoryTest {
 
+    @PersistenceContext
+    private EntityManager entityManager;
     private DiscountCardRepository discountCardRepository;
 
     @BeforeEach
     void setUp() {
-        discountCardRepository = new DiscountCardRepositoryImpl();
+        discountCardRepository = new DiscountCardRepositoryImpl(entityManager);
     }
 
     @AfterEach
