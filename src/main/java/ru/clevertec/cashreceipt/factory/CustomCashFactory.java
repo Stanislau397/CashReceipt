@@ -1,18 +1,17 @@
 package ru.clevertec.cashreceipt.factory;
 
-import org.springframework.beans.factory.annotation.Value;
 import ru.clevertec.cashreceipt.cache.Cache;
 import ru.clevertec.cashreceipt.cache.impl.LFUCache;
 import ru.clevertec.cashreceipt.cache.impl.LRUCache;
 
-public class CacheFactory<T> {
+public class CustomCashFactory<T> {
 
-    @Value("${cache.capacity}")
-    private Integer capacity;
-    @Value(("${cache.algorithm}"))
-    private String cacheAlgorithm;
+    private final int capacity = 100;
+    private final String cacheAlgorithm = "LFUCache";
 
     public Cache<T> create() {
+        System.out.println(cacheAlgorithm);
+        System.out.println(capacity);
         Cache<T> cache = new LFUCache<>(capacity);
         if ("LRUCache".equals(cacheAlgorithm)) {
             cache = new LRUCache<>(capacity);

@@ -8,6 +8,7 @@ import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
+import ru.clevertec.cashreceipt.repository.proxy.ProxyProductRepository;
 import ru.clevertec.cashreceipt.service.ProductService;
 
 import java.math.BigDecimal;
@@ -25,11 +26,11 @@ public class ProductServiceImpl implements ProductService {
     private static final Integer DISCOUNT_PERCENT = 10;
     private static final Integer FIVE_PRODUCTS = 5;
     private static final Integer ONE_HUNDRED = 100;
-    private final ProductRepository productRepository;
+    private final ProxyProductRepository proxyProductRepository;
 
     @Override
     public Product findProductById(Long productId) {
-        return productRepository.selectById(productId)
+        return proxyProductRepository.selectById(productId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId)
                 ));
