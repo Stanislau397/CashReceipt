@@ -120,4 +120,32 @@ class LRUCacheTest {
             assertThat(actualCard).isEmpty();
         }
     }
+
+    @Nested
+    class RemoveTest {
+
+        @Test
+        void checkShouldRemoveValueFromNodeMap() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+            Long cardId = discountCard.getDiscountCardId();
+
+            lruCache.put(cardId, discountCard);
+            lruCache.remove(cardId);
+
+            assertThat(lruCache.getNodeMap().size())
+                    .isEqualTo(0);
+        }
+
+        @Test
+        void checkShouldNotRemoveValueFromNodeMap() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+            Long cardId = discountCard.getDiscountCardId();
+
+            lruCache.put(cardId, discountCard);
+            lruCache.remove(2L);
+
+            assertThat(lruCache.getNodeMap().size())
+                    .isEqualTo(1);
+        }
+    }
 }
