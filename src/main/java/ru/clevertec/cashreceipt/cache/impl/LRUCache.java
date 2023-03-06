@@ -62,7 +62,6 @@ public class LRUCache<T> implements Cache<T> {
 
     @Override
     public void remove(Long key) {
-
         nodeMap.remove(key);
     }
 
