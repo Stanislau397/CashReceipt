@@ -10,12 +10,10 @@ import ru.clevertec.cashreceipt.repository.ProductRepository;
 import java.util.Optional;
 
 @Repository
-@AllArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
-
 
     @Override
     public Product save(Product product) {

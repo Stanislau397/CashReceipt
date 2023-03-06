@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "cache.capacity",
+      "type": "java.lang.String",
+      "description": "Description for cache.capacity."
+    },
+    {
+      "name": "capacity",
+      "type": "java.lang.String",
+      "description": "Description for capacity."
+    },
+    {
+      "name": "algorithm",
+      "type": "java.lang.String",
+      "description": "Description for algorithm."
+    }
+  ] }
