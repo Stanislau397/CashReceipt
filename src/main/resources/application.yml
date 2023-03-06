@@ -1,4 +1,7 @@
-cache-capacity: 10
+cache:
+  capacity: 100
+  algorithm: LRUCache
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

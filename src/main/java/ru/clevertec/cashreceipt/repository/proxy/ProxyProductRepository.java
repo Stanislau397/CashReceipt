@@ -1,17 +1,18 @@
 package ru.clevertec.cashreceipt.repository.proxy;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.cashreceipt.cache.Cache;
 import ru.clevertec.cashreceipt.entity.Product;
-import ru.clevertec.cashreceipt.factory.CustomCashFactory;
 import ru.clevertec.cashreceipt.repository.impl.ProductRepositoryImpl;
 
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class ProxyProductRepository extends ProductRepositoryImpl {
 
-    private Cache<Product> productCache = new CustomCashFactory<Product>().create();
+    private final Cache<Product> productCache;
 
     @Override
     public Product save(Product product) {
