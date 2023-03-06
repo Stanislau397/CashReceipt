@@ -16,6 +16,7 @@ import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
+import ru.clevertec.cashreceipt.repository.proxy.ProxyProductRepository;
 import ru.clevertec.cashreceipt.service.ProductService;
 import ru.clevertec.cashreceipt.util.testbuilder.impl.CashReceiptProductTestBuilder;
 import ru.clevertec.cashreceipt.util.testbuilder.impl.DiscountCardTestBuilder;
@@ -38,7 +39,7 @@ import static ru.clevertec.cashreceipt.exception.ExceptionMessage.PRODUCT_BY_GIV
 class ProductServiceImplTest {
 
     @Mock
-    private ProductRepository productRepository;
+    private ProxyProductRepository productRepository;
     private AutoCloseable autoCloseable;
     private ProductService productService;
 
