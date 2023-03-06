@@ -1,8 +1,6 @@
 package ru.clevertec.cashreceipt.cache.impl;
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import ru.clevertec.cashreceipt.cache.Cache;
 
 import java.util.HashMap;
