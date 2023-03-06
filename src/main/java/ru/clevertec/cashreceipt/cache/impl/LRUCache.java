@@ -16,7 +16,6 @@ public class LRUCache<T> implements Cache<T> {
     private final Node tail;
     private final Map<Long, Node> nodeMap;
 
-
     public LRUCache(int capacity) {
         this.head = new Node();
         this.tail = new Node();

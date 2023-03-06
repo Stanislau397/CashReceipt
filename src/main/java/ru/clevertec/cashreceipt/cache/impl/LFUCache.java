@@ -1,8 +1,5 @@
 package ru.clevertec.cashreceipt.cache.impl;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import ru.clevertec.cashreceipt.cache.Cache;
 
 import java.util.HashMap;
@@ -10,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
-@Getter
 public class LFUCache<T> implements Cache<T> {
 
     private final int capacity;
