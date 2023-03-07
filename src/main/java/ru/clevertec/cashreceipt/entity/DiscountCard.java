@@ -11,8 +11,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "discount_cards")
@@ -29,6 +31,8 @@ public class DiscountCard {
     @Column(name = "discount_card_id")
     private Long discountCardId;
 
-    @Column(name = "discount_percentage")git 
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "discount_percentage")
     private Integer discountPercent;
 }

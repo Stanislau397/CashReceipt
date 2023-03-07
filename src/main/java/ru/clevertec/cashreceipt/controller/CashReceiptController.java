@@ -2,6 +2,7 @@ package ru.clevertec.cashreceipt.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@AllArgsConstructor
 public class CashReceiptController {
 
     private static final String ITEM = "item";
@@ -31,14 +33,6 @@ public class CashReceiptController {
     private PdfGenerator pdfGenerator;
     private ProductService productService;
     private DiscountCardService discountCardService;
-
-    @Autowired
-    public CashReceiptController(ItemsParser parametersParser, PdfGenerator pdfGenerator, ProductService productService, DiscountCardService discountCardService) {
-        this.parametersParser = parametersParser;
-        this.pdfGenerator = pdfGenerator;
-        this.productService = productService;
-        this.discountCardService = discountCardService;
-    }
 
     @GetMapping(CHECK_URN)
     public void generatePdfFile(HttpServletRequest request, HttpServletResponse response) {

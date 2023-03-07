@@ -15,6 +15,9 @@ import jakarta.persistence.Table;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 @Entity
@@ -34,8 +37,11 @@ public class Product {
     private Long productId;
 
     @Column(name = "name")
+    @Pattern(regexp = "^([A-Z])([a-z_ \\\"]+)$")
     private String name;
 
+    @NotNull
+    @DecimalMin(value = "1.0")
     @Column(name = "price")
     private BigDecimal price;
 
