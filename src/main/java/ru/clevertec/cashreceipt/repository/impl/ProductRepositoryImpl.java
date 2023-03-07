@@ -30,7 +30,9 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Product delete(Product product) {
-        entityManager.remove(product);
+        entityManager.remove(entityManager.contains(product)
+                ? product
+                : entityManager.merge(product));
         return product;
     }
 

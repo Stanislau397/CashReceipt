@@ -25,7 +25,9 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
     @Override
     public DiscountCard delete(DiscountCard discountCard) {
-        entityManager.remove(discountCard);
+        entityManager.remove(entityManager.contains(discountCard)
+                ? discountCard
+                : entityManager.merge(discountCard));
         return discountCard;
     }
 
