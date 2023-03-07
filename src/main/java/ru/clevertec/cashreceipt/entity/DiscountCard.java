@@ -29,6 +29,6 @@ public class DiscountCard {
     @Column(name = "discount_card_id")
     private Long discountCardId;
 
-    @Column(name = "discount_percentage")
+    @Column(name = "discount_percentage")git 
     private Integer discountPercent;
 }
