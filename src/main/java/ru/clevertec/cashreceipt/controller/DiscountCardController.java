@@ -1,5 +1,6 @@
 package ru.clevertec.cashreceipt.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
 
-import javax.validation.Valid;
 
 @RestController
 @AllArgsConstructor
