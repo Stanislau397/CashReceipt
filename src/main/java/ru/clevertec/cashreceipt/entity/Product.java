@@ -1,5 +1,8 @@
 package ru.clevertec.cashreceipt.entity;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,9 +18,6 @@ import jakarta.persistence.Table;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 @Entity
@@ -36,8 +36,8 @@ public class Product {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "name")
     @Pattern(regexp = "^([A-Z])([a-z_ \\\"]+)$")
+    @Column(name = "name")
     private String name;
 
     @NotNull
