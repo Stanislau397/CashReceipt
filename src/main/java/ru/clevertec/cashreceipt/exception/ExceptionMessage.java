@@ -11,6 +11,7 @@ public class ExceptionMessage {
 
     //DiscountCard
     public static final String DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND = "Discount card with id %d not found!";
+    public static final String DISCOUNT_CARD_BY_GIVEN_ID_ALREADY_EXISTS = "Discount card with id %d already exists";
 
     //Parser
     public static final String COULD_NOT_PARSE_GIVEN_PARAMETER = "Could not parse parameter!";
