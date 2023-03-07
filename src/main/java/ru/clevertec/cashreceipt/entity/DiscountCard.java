@@ -6,12 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
@@ -29,6 +30,8 @@ public class DiscountCard {
     @Column(name = "discount_card_id")
     private Long discountCardId;
 
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "discount_percentage")
     private Integer discountPercent;
 }
