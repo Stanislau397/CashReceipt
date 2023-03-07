@@ -29,11 +29,19 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Product delete(Product product) {
-        entityManager.remove(entityManager.contains(product)
-                ? product
-                : entityManager.merge(product));
-        return product;
+    public void deleteById(Long productId) {
+        entityManager.createQuery("DELETE FROM Product p WHERE p.productId = ?1")
+                .setParameter(1, productId)
+                .executeUpdate();
+    }
+
+    @Override
+    public Optional<Product> selectByName(String name) {
+        return entityManager
+                .createQuery("SELECT p FROM Product p WHERE p.name = ?1", Product.class)
+                .setParameter(1, name)
+                .getResultStream()
+                .findFirst();
     }
 
     @Override
@@ -41,6 +49,15 @@ public class ProductRepositoryImpl implements ProductRepository {
         return entityManager
                 .createQuery("SELECT p FROM Product p WHERE p.productId = ?1", Product.class)
                 .setParameter(1, productId)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Product> selectProduct(Product product) {
+        return entityManager
+                .createQuery("SELECT p FROM Product p where p = ?1", Product.class)
+                .setParameter(1, product)
                 .getResultStream()
                 .findFirst();
     }

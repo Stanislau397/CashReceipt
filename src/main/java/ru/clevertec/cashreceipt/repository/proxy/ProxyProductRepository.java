@@ -33,11 +33,9 @@ public class ProxyProductRepository extends ProductRepositoryImpl {
     }
 
     @Override
-    public Product delete(Product product) {
-        Product deletedProduct = super.delete(product);
-        Long productId = deletedProduct.getProductId();
+    public void deleteById(Long productId) {
+        super.deleteById(productId);
         productCache.remove(productId);
-        return deletedProduct;
     }
 
     @Override
