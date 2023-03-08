@@ -13,7 +13,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
 
-    private Cache<DiscountCard> discountCardCache;
+    private final Cache<Long, DiscountCard> discountCardCache;
 
     @Override
     public DiscountCard save(DiscountCard discountCard) {
@@ -26,11 +26,9 @@ public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
     }
 
     @Override
-    public DiscountCard delete(DiscountCard discountCard) {
-        DiscountCard deletedCard = super.delete(discountCard);
-        Long cardId = deletedCard.getDiscountCardId();
-        discountCardCache.remove(cardId);
-        return deletedCard;
+    public void deleteById(Long discountCardId) {
+        deleteById(discountCardId);
+        discountCardCache.remove(discountCardId);
     }
 
     @Override

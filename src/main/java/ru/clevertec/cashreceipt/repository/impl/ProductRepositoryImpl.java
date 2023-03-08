@@ -10,6 +10,11 @@ import ru.clevertec.cashreceipt.repository.ProductRepository;
 
 import java.util.Optional;
 
+import static ru.clevertec.cashreceipt.repository.HqlQuery.DELETE_PRODUCT_BY_ID;
+import static ru.clevertec.cashreceipt.repository.HqlQuery.SELECT_PRODUCT;
+import static ru.clevertec.cashreceipt.repository.HqlQuery.SELECT_PRODUCT_BY_ID;
+import static ru.clevertec.cashreceipt.repository.HqlQuery.SELECT_PRODUCT_BY_NAME;
+
 @Repository
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +35,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void deleteById(Long productId) {
-        entityManager.createQuery("DELETE FROM Product p WHERE p.productId = ?1")
+        entityManager.createQuery(DELETE_PRODUCT_BY_ID)
                 .setParameter(1, productId)
                 .executeUpdate();
     }
@@ -38,7 +43,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> selectByName(String name) {
         return entityManager
-                .createQuery("SELECT p FROM Product p WHERE p.name = ?1", Product.class)
+                .createQuery(SELECT_PRODUCT_BY_NAME, Product.class)
                 .setParameter(1, name)
                 .getResultStream()
                 .findFirst();
@@ -47,7 +52,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> selectById(Long productId) {
         return entityManager
-                .createQuery("SELECT p FROM Product p WHERE p.productId = ?1", Product.class)
+                .createQuery(SELECT_PRODUCT_BY_ID, Product.class)
                 .setParameter(1, productId)
                 .getResultStream()
                 .findFirst();
@@ -56,7 +61,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> selectProduct(Product product) {
         return entityManager
-                .createQuery("SELECT p FROM Product p where p = ?1", Product.class)
+                .createQuery(SELECT_PRODUCT, Product.class)
                 .setParameter(1, product)
                 .getResultStream()
                 .findFirst();

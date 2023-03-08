@@ -7,11 +7,13 @@ import java.util.Optional;
 
 @Component
 @Scope("prototype")
-public interface Cache<T> {
+public interface Cache<K, V> {
 
-    void put(Long key, T value);
 
-    Optional<T> get(Long key);
+    void put(K key, V value);
 
-    void remove(Long key);
+    void remove(K key);
+
+    Optional<V> get(K key);
+
 }

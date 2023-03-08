@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Table(name = "discount_cards")
@@ -31,7 +32,7 @@ public class DiscountCard {
     private Long discountCardId;
 
     @NotNull
-    @Size(min = 1, max = 100)
+    @Range(min = 1, max = 100)
     @Column(name = "discount_percentage")
     private Integer discountPercent;
 }

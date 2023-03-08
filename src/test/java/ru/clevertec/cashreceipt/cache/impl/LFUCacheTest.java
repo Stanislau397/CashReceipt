@@ -19,7 +19,7 @@ import static org.mockito.Mockito.doNothing;
 class LFUCacheTest {
 
     private static final int CAPACITY = 2;
-    private LFUCache<Product> lfuCache;
+    private LFUCache<Long, Product> lfuCache;
 
     @BeforeEach
     void setUp() {
@@ -81,7 +81,7 @@ class LFUCacheTest {
 
             lfuCache.put(productId, product);
 
-            assertThat(lfuCache.getFrequencyMap().size())
+            assertThat(lfuCache.getKeyFrequencyMap().size())
                     .isEqualTo(1);
         }
 
@@ -92,7 +92,7 @@ class LFUCacheTest {
 
             lfuCache.put(productId, product);
 
-            assertThat(lfuCache.getFrequencyToKeys().size())
+            assertThat(lfuCache.getFrequencyMap().size())
                     .isEqualTo(1);
         }
 

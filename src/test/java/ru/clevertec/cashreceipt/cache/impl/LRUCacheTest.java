@@ -18,7 +18,7 @@ import static org.mockito.Mockito.doNothing;
 class LRUCacheTest {
 
     private static final int CAPACITY = 2;
-    private LRUCache<DiscountCard> lruCache;
+    private LRUCache<Long, DiscountCard> lruCache;
 
     @BeforeEach
     void setUp() {

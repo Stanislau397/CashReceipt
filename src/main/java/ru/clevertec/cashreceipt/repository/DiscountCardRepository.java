@@ -13,7 +13,7 @@ public interface DiscountCardRepository {
     DiscountCard save(DiscountCard discountCard);
 
     @Transactional
-    DiscountCard delete(DiscountCard discountCard);
+    void deleteById(Long discountCardId);
 
     @Transactional
     DiscountCard update(DiscountCard discountCard);
