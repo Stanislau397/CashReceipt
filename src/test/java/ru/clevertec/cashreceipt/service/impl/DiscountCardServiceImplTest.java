@@ -21,7 +21,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.DISCOUNT_CARD_BY_GIVEN_ID_ALREADY_EXISTS;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.GIVEN_ID_IS_NOT_VALID;
@@ -70,6 +72,71 @@ class DiscountCardServiceImplTest {
             assertThatThrownBy(() -> discountCardService.addDiscountCard(discountCard))
                     .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_ALREADY_EXISTS, discountCard.getDiscountCardId()))
                     .isInstanceOf(EntityAlreadyExistsException.class);
+        }
+    }
+
+    @Nested
+    class UpdateDiscountCardTest {
+
+        @Test
+        void checkShouldUpdateDiscountCard() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+            DiscountCard newDiscountCard = DiscountCardTestBuilder.aDiscountCard()
+                    .withDiscountPercent(12)
+                    .build();
+
+            Long cardId = discountCard.getDiscountCardId();
+
+            doReturn(Optional.of(discountCard))
+                    .when(proxyDiscountCardRepository)
+                    .selectById(cardId);
+
+            discountCardService.updateDiscountCard(newDiscountCard);
+
+           verify(proxyDiscountCardRepository).update(newDiscountCard);
+        }
+
+        @Test
+        void checkUpdateDiscountCardShouldThrowEntityNotFoundException() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+            Long cardId = 1L;
+
+            doReturn(Optional.empty())
+                    .when(proxyDiscountCardRepository).selectById(cardId);
+
+            assertThatThrownBy(() -> discountCardService.updateDiscountCard(discountCard))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId);
+        }
+    }
+
+    @Nested
+    class RemoveDiscountCardByIdTest {
+
+        @Test
+        void checkShouldRemoveDiscountCardById() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+            Long cardId = discountCard.getDiscountCardId();
+
+            doReturn(Optional.of(discountCard))
+                    .when(proxyDiscountCardRepository)
+                    .selectById(cardId);
+
+            discountCardService.removeDiscountCardById(cardId);
+
+            verify(proxyDiscountCardRepository).deleteById(cardId);
+        }
+
+        @Test
+        void checkRemoveDiscountCardByIdShouldThrowEntityNotFoundException() {
+            Long cardId = 1L;
+
+            doReturn(Optional.empty())
+                    .when(proxyDiscountCardRepository).selectById(cardId);
+
+            assertThatThrownBy(() -> discountCardService.removeDiscountCardById(cardId))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId);
         }
     }
 
