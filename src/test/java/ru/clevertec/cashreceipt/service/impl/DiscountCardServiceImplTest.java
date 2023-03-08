@@ -3,11 +3,13 @@ package ru.clevertec.cashreceipt.service.impl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
+import ru.clevertec.cashreceipt.exception.EntityAlreadyExistsException;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.exception.InvalidInputException;
 import ru.clevertec.cashreceipt.repository.proxy.ProxyDiscountCardRepository;
@@ -20,6 +22,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
+import static ru.clevertec.cashreceipt.exception.ExceptionMessage.DISCOUNT_CARD_BY_GIVEN_ID_ALREADY_EXISTS;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.GIVEN_ID_IS_NOT_VALID;
 
@@ -39,6 +42,35 @@ class DiscountCardServiceImplTest {
     @AfterEach
     void tearDown() throws Exception {
         autoCloseable.close();
+    }
+
+    @Nested
+    class AddDiscountCardTest {
+
+        @Test
+        void checkShouldAddDiscountCard() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+
+            doReturn(discountCard).when(proxyDiscountCardRepository)
+                    .save(discountCard);
+
+            DiscountCard actualCard = discountCardService.addDiscountCard(discountCard);
+
+            assertThat(actualCard).isEqualTo(discountCard);
+        }
+
+        @Test
+        void checkAddDiscountCardShouldThrowEntityAlreadyExistsException() {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
+
+            doReturn(Optional.of(discountCard))
+                    .when(proxyDiscountCardRepository)
+                    .selectById(discountCard.getDiscountCardId());
+
+            assertThatThrownBy(() -> discountCardService.addDiscountCard(discountCard))
+                    .hasMessage(String.format(DISCOUNT_CARD_BY_GIVEN_ID_ALREADY_EXISTS, discountCard.getDiscountCardId()))
+                    .isInstanceOf(EntityAlreadyExistsException.class);
+        }
     }
 
     @Nested
