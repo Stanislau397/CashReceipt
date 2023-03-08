@@ -7,14 +7,14 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
-public class LFUCache<T> implements Cache<T> {
+public class LFUCache<K, T> implements Cache<K, T> {
 
 
     private int capacity;
     private int minFrequency;
-    private final Map<Long, T> valuesMap;
-    private final Map<Long, Integer> frequencyMap;
-    private final Map<Integer, LinkedHashSet<Long>> frequencyToKeys;
+    private final Map<K, T> valuesMap;
+    private final Map<K, Integer> frequencyMap;
+    private final Map<Integer, LinkedHashSet<K>> frequencyToKeys;
 
     public LFUCache(int capacity) {
         this.capacity = capacity;
@@ -24,7 +24,7 @@ public class LFUCache<T> implements Cache<T> {
     }
 
     @Override
-    public Optional<T> get(Long key) {
+    public Optional<T> get(K key) {
         //if the key doesn't exist in the cache, return empty
         Optional<T> value = Optional.empty();
         if (!valuesMap.containsKey(key)) {
@@ -51,7 +51,7 @@ public class LFUCache<T> implements Cache<T> {
     }
 
     @Override
-    public void put(Long key, T value) {
+    public void put(K key, T value) {
         //if the key exists, update key and frequency
         if (valuesMap.containsKey(key)) {
             valuesMap.put(key, value);
@@ -59,7 +59,7 @@ public class LFUCache<T> implements Cache<T> {
         }
         //if the cache reached capacity, then remove the least frequently used key
         if (capacity == valuesMap.size()) {
-            long keyToBeRemoved = frequencyToKeys.get(minFrequency)
+            var keyToBeRemoved = frequencyToKeys.get(minFrequency)
                     .iterator()
                     .next();
             frequencyToKeys.get(minFrequency)

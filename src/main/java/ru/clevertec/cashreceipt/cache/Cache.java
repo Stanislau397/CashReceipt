@@ -2,9 +2,9 @@ package ru.clevertec.cashreceipt.cache;
 
 import java.util.Optional;
 
-public interface Cache<T> {
+public interface Cache<K, T> {
 
-    void put(Long key, T value);
+    void put(K key, T value);
 
-    Optional<T> get(Long key);
+    Optional<T> get(K key);
 }

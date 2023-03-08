@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class LRUCache<T> implements Cache<T> {
+public class LRUCache<K, T> implements Cache<K, T> {
 
     private final int capacity;
     private final Node head;
     private final Node tail;
-    private final Map<Long, Node> nodeMap;
+    private final Map<K, Node> nodeMap;
 
 
     public LRUCache(int capacity) {
@@ -26,7 +26,7 @@ public class LRUCache<T> implements Cache<T> {
     }
 
     @Override
-    public void put(Long key, T value) {
+    public void put(K key, T value) {
         Node currentNode = nodeMap.get(key);
         if (currentNode != null) {
             removeNode(currentNode);
@@ -35,7 +35,7 @@ public class LRUCache<T> implements Cache<T> {
         }
         if (capacity == nodeMap.size()) {
             Node tailPreviousNode = tail.getPrev();
-            Long tailKey = tailPreviousNode.getKey();
+            var tailKey = tailPreviousNode.getKey();
             nodeMap.remove(tailKey);
             removeNode(tailPreviousNode);
         }
@@ -48,7 +48,7 @@ public class LRUCache<T> implements Cache<T> {
     }
 
     @Override
-    public Optional<T> get(Long key) {
+    public Optional<T> get(K key) {
         Node node = nodeMap.get(key);
         Optional<T> valueOptional = Optional.empty();
         if (node != null) {
@@ -79,7 +79,7 @@ public class LRUCache<T> implements Cache<T> {
     @Setter
     @Getter
     private class Node {
-        private Long key;
+        private K key;
         private T value;
         private Node next;
         private Node prev;
