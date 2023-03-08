@@ -28,10 +28,10 @@ public class DiscountCardController {
         return new ResponseEntity<>(savedCard, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<DiscountCard> deleteDiscountCard(@Valid @RequestBody DiscountCard discountCard) {
-        DiscountCard removedCard = discountCardService.removeDiscountCard(discountCard);
-        return new ResponseEntity<>(removedCard, HttpStatus.OK);
+    @DeleteMapping("/delete/{discountCardId}")
+    public ResponseEntity<Void> deleteDiscountCard(@PathVariable Long discountCardId) {
+        discountCardService.removeDiscountCardById(discountCardId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update")

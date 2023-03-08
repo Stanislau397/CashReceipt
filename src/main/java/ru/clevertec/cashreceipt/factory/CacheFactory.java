@@ -9,7 +9,7 @@ import ru.clevertec.cashreceipt.cache.impl.LFUCache;
 import ru.clevertec.cashreceipt.cache.impl.LRUCache;
 
 @Component
-public class CustomCashFactory<K, V> {
+public class CacheFactory<K, V> {
 
     @Value("${cache.capacity}")
     private int capacity;

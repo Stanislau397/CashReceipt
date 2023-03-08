@@ -26,11 +26,9 @@ public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
     }
 
     @Override
-    public DiscountCard delete(DiscountCard discountCard) {
-        DiscountCard deletedCard = super.delete(discountCard);
-        Long cardId = deletedCard.getDiscountCardId();
-        discountCardCache.remove(cardId);
-        return deletedCard;
+    public void deleteById(Long discountCardId) {
+        deleteById(discountCardId);
+        discountCardCache.remove(discountCardId);
     }
 
     @Override

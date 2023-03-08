@@ -8,7 +8,7 @@ public interface DiscountCardService {
 
     DiscountCard updateDiscountCard(DiscountCard discountCard);
 
-    DiscountCard removeDiscountCard(DiscountCard discountCard);
+    void removeDiscountCardById(Long discountCardId);
 
     DiscountCard findDiscountCardById(String id);
 }
