@@ -9,7 +9,7 @@ import ru.clevertec.cashreceipt.cache.impl.LFUCache;
 import ru.clevertec.cashreceipt.cache.impl.LRUCache;
 
 @Component
-public class CustomCashFactory<K, T> {
+public class CustomCashFactory<K, V> {
 
     @Value("${cache.capacity}")
     private int capacity;
@@ -18,8 +18,8 @@ public class CustomCashFactory<K, T> {
 
     @Bean
     @Scope("prototype")
-    public Cache<K, T> create() {
-        Cache<K, T> cache = new LFUCache<>(capacity);
+    public Cache<K, V> create() {
+        Cache<K, V> cache = new LFUCache<>(capacity);
         if ("LRUCache".equals(cacheAlgorithm)) {
             cache = new LRUCache<>(capacity);
         }

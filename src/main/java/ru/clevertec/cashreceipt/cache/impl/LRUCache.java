@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
-public class LRUCache<K, T> implements Cache<K, T> {
+public class LRUCache<K, V> implements Cache<K, V> {
 
     private final int capacity;
     private final Node head;
@@ -26,7 +26,7 @@ public class LRUCache<K, T> implements Cache<K, T> {
     }
 
     @Override
-    public void put(K key, T value) {
+    public void put(K key, V value) {
         Node currentNode = nodeMap.get(key);
         if (currentNode != null) {
             removeNode(currentNode);
@@ -48,11 +48,11 @@ public class LRUCache<K, T> implements Cache<K, T> {
     }
 
     @Override
-    public Optional<T> get(K key) {
+    public Optional<V> get(K key) {
         Node node = nodeMap.get(key);
-        Optional<T> valueOptional = Optional.empty();
+        Optional<V> valueOptional = Optional.empty();
         if (node != null) {
-            T value = node.getValue();
+            V value = node.getValue();
             valueOptional = Optional.of(value);
             removeNode(node);
             addNode(node);
@@ -85,7 +85,7 @@ public class LRUCache<K, T> implements Cache<K, T> {
     @Getter
     private class Node {
         private K key;
-        private T value;
+        private V value;
         private Node next;
         private Node prev;
     }
