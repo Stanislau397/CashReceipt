@@ -13,7 +13,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
 
-    private Cache<DiscountCard> discountCardCache;
+    private final Cache<DiscountCard> discountCardCache;
 
     @Override
     public DiscountCard save(DiscountCard discountCard) {
