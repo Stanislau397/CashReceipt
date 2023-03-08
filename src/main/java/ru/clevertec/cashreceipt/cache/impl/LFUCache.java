@@ -52,7 +52,7 @@ public class LFUCache<K, T> implements Cache<K, T> {
     }
 
     @Override
-    public void remove(Long key) {
+    public void remove(K key) {
         if (valuesMap.containsKey(key)) {
             valuesMap.remove(key);
             int frequency = frequencyMap.get(key);

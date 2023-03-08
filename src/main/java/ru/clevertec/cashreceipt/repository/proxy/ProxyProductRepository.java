@@ -12,7 +12,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ProxyProductRepository extends ProductRepositoryImpl {
 
-    private final Cache<Product> productCache;
+    private final Cache<Long, Product> productCache;
 
     @Override
     public Product save(Product product) {

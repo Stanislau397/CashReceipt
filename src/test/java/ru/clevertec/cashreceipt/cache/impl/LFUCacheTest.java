@@ -19,7 +19,7 @@ import static org.mockito.Mockito.doNothing;
 class LFUCacheTest {
 
     private static final int CAPACITY = 2;
-    private LFUCache<Product> lfuCache;
+    private LFUCache<Long, Product> lfuCache;
 
     @BeforeEach
     void setUp() {
