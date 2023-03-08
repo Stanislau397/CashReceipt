@@ -10,6 +10,9 @@ import ru.clevertec.cashreceipt.repository.DiscountCardRepository;
 
 import java.util.Optional;
 
+import static ru.clevertec.cashreceipt.repository.HqlQuery.DELETE_DISCOUNT_CARD_BY_ID;
+import static ru.clevertec.cashreceipt.repository.HqlQuery.SELECT_DISCOUNT_CARD_BY_ID;
+
 @Repository
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,11 +27,10 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     }
 
     @Override
-    public DiscountCard delete(DiscountCard discountCard) {
-        entityManager.remove(entityManager.contains(discountCard)
-                ? discountCard
-                : entityManager.merge(discountCard));
-        return discountCard;
+    public void deleteById(Long discountCardId) {
+        entityManager.createQuery(DELETE_DISCOUNT_CARD_BY_ID)
+                .setParameter(1, discountCardId)
+                .executeUpdate();
     }
 
     @Override
@@ -39,7 +41,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     @Override
     public Optional<DiscountCard> selectById(Long discountCardId) {
         return entityManager
-                .createQuery("SELECT dc FROM DiscountCard dc WHERE dc.discountCardId = ?1", DiscountCard.class)
+                .createQuery(SELECT_DISCOUNT_CARD_BY_ID, DiscountCard.class)
                 .setParameter(1, discountCardId)
                 .getResultStream()
                 .findFirst();

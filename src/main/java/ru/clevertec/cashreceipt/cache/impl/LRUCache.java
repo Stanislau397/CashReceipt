@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
-public class LRUCache<K, T> implements Cache<K, T> {
+public class LRUCache<K, V> implements Cache<K, V> {
 
     private final int capacity;
     private final Node head;
@@ -25,8 +25,20 @@ public class LRUCache<K, T> implements Cache<K, T> {
         this.nodeMap = new HashMap<>(capacity);
     }
 
+    /**
+     * Puts Node into the {@link LRUCache#nodeMap}
+     * <p>
+     * If Node is Present in {@link LRUCache#nodeMap} then remove it from DoublyLinkedList,
+     * update the value and put it after {@link LRUCache#head}
+     * <p>
+     * If Node doesn't exist then check if capacity
+     * is reached find node before {@link LRUCache#tail},
+     * remove that node from {@link LRUCache#nodeMap},
+     * remove it from DoublyLinkedList and add a new Node
+     * after {@link LRUCache#head}
+     */
     @Override
-    public void put(K key, T value) {
+    public void put(K key, V value) {
         Node currentNode = nodeMap.get(key);
         if (currentNode != null) {
             removeNode(currentNode);
@@ -39,7 +51,6 @@ public class LRUCache<K, T> implements Cache<K, T> {
             nodeMap.remove(tailKey);
             removeNode(tailPreviousNode);
         }
-
         Node newNode = new Node();
         newNode.setKey(key);
         newNode.setValue(value);
@@ -47,12 +58,20 @@ public class LRUCache<K, T> implements Cache<K, T> {
         addNode(newNode);
     }
 
+    /**
+     * Gets Value from nodeMap by provided key
+     * <p>
+     * If Node is null then return empty optional
+     * <p>
+     * If Node is not null then remove node from the
+     * DoublyLinkedList and put after{@link LRUCache#head}
+     */
     @Override
-    public Optional<T> get(K key) {
+    public Optional<V> get(K key) {
         Node node = nodeMap.get(key);
-        Optional<T> valueOptional = Optional.empty();
+        Optional<V> valueOptional = Optional.empty();
         if (node != null) {
-            T value = node.getValue();
+            V value = node.getValue();
             valueOptional = Optional.of(value);
             removeNode(node);
             addNode(node);
@@ -60,19 +79,28 @@ public class LRUCache<K, T> implements Cache<K, T> {
         return valueOptional;
     }
 
+    /**
+     * Removes Value from nodeMap by provided key
+     */
     @Override
     public void remove(K key) {
         nodeMap.remove(key);
     }
 
+    /**
+     * Adds Node after {@link LRUCache#head}
+     */
     public void addNode(Node node) {
-        Node headNext = this.head.getNext();
-        this.head.setNext(node);
-        node.setPrev(this.head);
+        Node headNext = head.getNext();
+        head.setNext(node);
+        node.setPrev(head);
         node.setNext(headNext);
         headNext.setPrev(node);
     }
 
+    /**
+     * Removes Node from DoublyLinkedList
+     */
     public void removeNode(Node node) {
         Node nextNode = node.getNext();
         Node prevNode = node.getPrev();
@@ -81,11 +109,15 @@ public class LRUCache<K, T> implements Cache<K, T> {
         prevNode.setNext(nextNode);
     }
 
+    /**
+     * @author Stanislau Kachan
+     * Class that represents DoublyLinkedList Node
+     */
     @Setter
     @Getter
     private class Node {
         private K key;
-        private T value;
+        private V value;
         private Node next;
         private Node prev;
     }

@@ -47,14 +47,13 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     }
 
     @Override
-    public DiscountCard removeDiscountCard(DiscountCard discountCard) {
-        Long cardId = discountCard.getDiscountCardId();
-        if (discountCardRepository.selectById(cardId).isEmpty()) {
+    public void removeDiscountCardById(Long discountCardId) {
+        if (discountCardRepository.selectById(discountCardId).isEmpty()) {
             throw new EntityNotFoundException(
-                    String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId)
+                    String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, discountCardId)
             );
         }
-        return discountCardRepository.delete(discountCard);
+        discountCardRepository.deleteById(discountCardId);
     }
 
     @Override

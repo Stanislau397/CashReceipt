@@ -81,7 +81,7 @@ class LFUCacheTest {
 
             lfuCache.put(productId, product);
 
-            assertThat(lfuCache.getFrequencyMap().size())
+            assertThat(lfuCache.getKeyFrequencyMap().size())
                     .isEqualTo(1);
         }
 
@@ -92,7 +92,7 @@ class LFUCacheTest {
 
             lfuCache.put(productId, product);
 
-            assertThat(lfuCache.getFrequencyToKeys().size())
+            assertThat(lfuCache.getFrequencyMap().size())
                     .isEqualTo(1);
         }
 
