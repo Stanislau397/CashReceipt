@@ -64,7 +64,7 @@ class ProductServiceImplTest {
         void checkShouldAddProduct() {
             Product product = ProductTestBuilder.aProduct().build();
 
-            doReturn(Optional.empty())
+            doReturn(null)
                     .when(productRepository)
                     .selectByName(product.getName());
             doReturn(product)
@@ -80,7 +80,7 @@ class ProductServiceImplTest {
         void checkAddProductShouldThrowEntityAlreadyExistsException() {
             Product product = ProductTestBuilder.aProduct().build();
 
-            doReturn(Optional.of(product))
+            doReturn(product)
                     .when(productRepository)
                     .selectByName(product.getName());
 
@@ -99,7 +99,7 @@ class ProductServiceImplTest {
                     .withName("Fish")
                     .build();
 
-            doReturn(Optional.of(newProduct))
+            doReturn(newProduct)
                     .when(productRepository)
                     .selectProduct(newProduct);
             doReturn(newProduct)
@@ -115,7 +115,7 @@ class ProductServiceImplTest {
         void checkUpdateProductShouldThrowEntityNotFoundException() {
             Product product = ProductTestBuilder.aProduct().build();
 
-            doReturn(Optional.empty())
+            doReturn(null)
                     .when(productRepository)
                     .selectProduct(product);
 
@@ -133,7 +133,7 @@ class ProductServiceImplTest {
             Product product = ProductTestBuilder.aProduct().build();
             Long productId = product.getProductId();
 
-            doReturn(Optional.of(product))
+            doReturn(product)
                     .when(productRepository)
                     .selectById(productId);
 
@@ -146,7 +146,7 @@ class ProductServiceImplTest {
         void checkRemoveProductByIdShouldThrowEntityNotFoundException() {
             Long productId = 1L;
 
-            doReturn(Optional.empty())
+            doReturn(null)
                     .when(productRepository)
                     .selectById(productId);
 
@@ -171,7 +171,7 @@ class ProductServiceImplTest {
                     .withProductId(productId)
                     .build();
 
-            doReturn(Optional.of(expectedProduct))
+            doReturn(expectedProduct)
                     .when(productRepository).selectById(productId);
 
             Product actualProduct = productService.findProductById(productId);
@@ -332,7 +332,7 @@ class ProductServiceImplTest {
 
             List<CashReceiptProduct> expectedProducts = List.of(cashReceiptProduct);
 
-            doReturn(Optional.of(product))
+            doReturn(product)
                     .when(productRepository).selectById(productId);
 
             List<CashReceiptProduct> actualProducts = productService
@@ -368,7 +368,7 @@ class ProductServiceImplTest {
 
             List<CashReceiptProduct> expectedProducts = List.of(cashReceiptProduct);
 
-            doReturn(Optional.of(product))
+            doReturn(product)
                     .when(productRepository).selectById(productId);
 
             List<CashReceiptProduct> actualProducts = productService

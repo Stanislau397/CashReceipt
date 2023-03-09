@@ -63,9 +63,9 @@ class ProxyDiscountCardRepositoryTest {
 
         proxyDiscountCardRepository.deleteById(cardId);
 
-        Optional<DiscountCard> actualDiscountCard = proxyDiscountCardRepository.selectById(cardId);
+        DiscountCard actualDiscountCard = proxyDiscountCardRepository.selectById(cardId);
 
-        assertThat(actualDiscountCard).isEmpty();
+        assertThat(actualDiscountCard).isNull();
     }
 
     @Test
@@ -73,12 +73,12 @@ class ProxyDiscountCardRepositoryTest {
         DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
         Long discountCardId = discountCard.getDiscountCardId();
 
-        doReturn(Optional.of(discountCard))
+        doReturn(discountCard)
                 .when(discountCardRepository)
                 .selectById(discountCardId);
 
-        Optional<DiscountCard> actualDiscountCard = proxyDiscountCardRepository.selectById(discountCardId);
+        DiscountCard actualDiscountCard = proxyDiscountCardRepository.selectById(discountCardId);
 
-        assertThat(actualDiscountCard).isNotEmpty();
+        assertThat(actualDiscountCard).isNotNull();
     }
 }

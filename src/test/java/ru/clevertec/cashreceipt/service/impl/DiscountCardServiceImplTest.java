@@ -64,7 +64,7 @@ class DiscountCardServiceImplTest {
         void checkAddDiscountCardShouldThrowEntityAlreadyExistsException() {
             DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
 
-            doReturn(Optional.of(discountCard))
+            doReturn(discountCard)
                     .when(proxyDiscountCardRepository)
                     .selectById(discountCard.getDiscountCardId());
 
@@ -86,7 +86,7 @@ class DiscountCardServiceImplTest {
 
             Long cardId = discountCard.getDiscountCardId();
 
-            doReturn(Optional.of(discountCard))
+            doReturn(discountCard)
                     .when(proxyDiscountCardRepository)
                     .selectById(cardId);
 
@@ -100,7 +100,7 @@ class DiscountCardServiceImplTest {
             DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
             Long cardId = 1L;
 
-            doReturn(Optional.empty())
+            doReturn(null)
                     .when(proxyDiscountCardRepository).selectById(cardId);
 
             assertThatThrownBy(() -> discountCardService.updateDiscountCard(discountCard))
@@ -117,7 +117,7 @@ class DiscountCardServiceImplTest {
             DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
             Long cardId = discountCard.getDiscountCardId();
 
-            doReturn(Optional.of(discountCard))
+            doReturn(discountCard)
                     .when(proxyDiscountCardRepository)
                     .selectById(cardId);
 
@@ -130,7 +130,7 @@ class DiscountCardServiceImplTest {
         void checkRemoveDiscountCardByIdShouldThrowEntityNotFoundException() {
             Long cardId = 1L;
 
-            doReturn(Optional.empty())
+            doReturn(null)
                     .when(proxyDiscountCardRepository).selectById(cardId);
 
             assertThatThrownBy(() -> discountCardService.removeDiscountCardById(cardId))
@@ -158,7 +158,7 @@ class DiscountCardServiceImplTest {
                     .withDiscountCardId(Long.parseLong(cardId))
                     .build();
 
-            doReturn(Optional.of(expectedDiscountCard))
+            doReturn(expectedDiscountCard)
                     .when(proxyDiscountCardRepository).selectById(Long.parseLong(cardId));
 
             DiscountCard actualDiscountCard = discountCardService.findDiscountCardById(cardId);

@@ -14,7 +14,6 @@ import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.repository.impl.DiscountCardRepositoryImpl;
 import ru.clevertec.cashreceipt.util.testbuilder.impl.DiscountCardTestBuilder;
 
-import java.util.Optional;
 import java.util.stream.LongStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -62,15 +61,15 @@ class DiscountCardRepositoryTest {
     }
 
     @Test
-    void checkDeleteShouldReturnEmptyDiscountCard() {
+    void checkDeleteShouldReturnNullDiscountCard() {
         DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
 
         DiscountCard savedCard = discountCardRepository.save(discountCard);
         discountCardRepository.deleteById(savedCard.getDiscountCardId());
 
-        Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(savedCard.getDiscountCardId());
+        DiscountCard actualDiscountCard = discountCardRepository.selectById(savedCard.getDiscountCardId());
 
-        assertThat(actualDiscountCard).isEmpty();
+        assertThat(actualDiscountCard).isNull();
     }
 
     @Nested
@@ -87,17 +86,17 @@ class DiscountCardRepositoryTest {
             discountCardRepository.save(expectedDiscountCard);
 
             Long discountCardId = expectedDiscountCard.getDiscountCardId();
-            Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(discountCardId);
+            DiscountCard actualDiscountCard = discountCardRepository.selectById(discountCardId);
 
-            assertThat(actualDiscountCard).isEqualTo(Optional.of(expectedDiscountCard));
+            assertThat(actualDiscountCard).isEqualTo(expectedDiscountCard);
         }
 
         @ParameterizedTest
         @MethodSource("cardIdArgumentProvider")
         void checkSelectDiscountCardByIdShouldNotReturnDiscountCard(Long cardId) {
-            Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(cardId);
+            DiscountCard actualDiscountCard = discountCardRepository.selectById(cardId);
 
-            assertThat(actualDiscountCard).isEmpty();
+            assertThat(actualDiscountCard).isNull();
         }
     }
 }

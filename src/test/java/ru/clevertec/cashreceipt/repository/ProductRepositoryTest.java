@@ -66,15 +66,15 @@ class ProductRepositoryTest {
     }
 
     @Test
-    void checkDeleteProductShouldBeEmpty() {
+    void checkDeleteProductShouldBeNull() {
         Product product = ProductTestBuilder.aProduct().build();
         Long productId = product.getProductId();
 
         productRepository.deleteById(productId);
 
-        Optional<Product> actualProduct = productRepository.selectById(productId);
+        Product actualProduct = productRepository.selectById(productId);
 
-        assertThat(actualProduct).isEmpty();
+        assertThat(actualProduct).isNull();
     }
 
     @Nested
@@ -91,17 +91,17 @@ class ProductRepositoryTest {
                     .build();
             Product product = productRepository.save(expectedProduct);
 
-            Optional<Product> actualProduct = productRepository.selectById(product.getProductId());
+            Product actualProduct = productRepository.selectById(product.getProductId());
 
-            assertThat(actualProduct).isEqualTo(Optional.of(expectedProduct));
+            assertThat(actualProduct).isEqualTo(expectedProduct);
         }
 
         @ParameterizedTest
         @MethodSource("productIdProviderFactory")
-        void checkSelectProductByIdShouldBeEmpty(Long productId) {
-            Optional<Product> actualProduct = productRepository.selectById(productId);
+        void checkSelectProductByIdShouldBeNull(Long productId) {
+            Product actualProduct = productRepository.selectById(productId);
 
-            assertThat(actualProduct).isEmpty();
+            assertThat(actualProduct).isNull();
         }
     }
 }

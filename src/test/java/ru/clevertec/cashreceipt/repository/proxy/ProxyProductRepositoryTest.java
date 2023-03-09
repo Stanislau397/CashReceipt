@@ -58,7 +58,7 @@ class ProxyProductRepositoryTest {
     }
 
     @Test
-    void checkDeleteProductShouldBeEmpty() {
+    void checkDeleteProductShouldBeNull() {
         Product product = ProductTestBuilder.aProduct().build();
         Long productId = product.getProductId();
 
@@ -68,9 +68,9 @@ class ProxyProductRepositoryTest {
 
         proxyProductRepository.deleteById(productId);
 
-        Optional<Product> actualProduct = proxyProductRepository.selectById(productId);
+        Product actualProduct = proxyProductRepository.selectById(productId);
 
-        assertThat(actualProduct).isEmpty();
+        assertThat(actualProduct).isNull();
     }
 
     @Nested
@@ -92,25 +92,25 @@ class ProxyProductRepositoryTest {
 
             Product product = proxyProductRepository.save(expectedProduct);
 
-            doReturn(Optional.of(product))
+            doReturn(product)
                     .when(productRepository)
                     .selectById(product.getProductId());
 
-            Optional<Product> actualProduct = proxyProductRepository.selectById(product.getProductId());
+            Product actualProduct = proxyProductRepository.selectById(product.getProductId());
 
-            assertThat(actualProduct).isEqualTo(Optional.of(expectedProduct));
+            assertThat(actualProduct).isEqualTo(expectedProduct);
         }
 
         @ParameterizedTest
         @MethodSource("productIdProviderFactory")
         void checkSelectProductByIdShouldBeEmpty(Long productId) {
-            doReturn(Optional.empty())
+            doReturn(null)
                     .when(productRepository)
                     .selectById(productId);
 
-            Optional<Product> actualProduct = proxyProductRepository.selectById(productId);
+            Product actualProduct = proxyProductRepository.selectById(productId);
 
-            assertThat(actualProduct).isEmpty();
+            assertThat(actualProduct).isNull();
         }
     }
 
@@ -119,25 +119,25 @@ class ProxyProductRepositoryTest {
         Product product = ProductTestBuilder.aProduct().build();
         String productName = product.getName();
 
-        doReturn(Optional.of(product))
+        doReturn(product)
                 .when(productRepository)
                 .selectByName(productName);
 
-        Optional<Product> actualProduct = proxyProductRepository.selectByName(productName);
+        Product actualProduct = proxyProductRepository.selectByName(productName);
 
-        assertThat(actualProduct).isNotEmpty();
+        assertThat(actualProduct).isNotNull();
     }
 
     @Test
     void checkShouldSelectProduct() {
         Product product = ProductTestBuilder.aProduct().build();
 
-        doReturn(Optional.of(product))
+        doReturn(product)
                 .when(productRepository)
                 .selectProduct(product);
 
-        Optional<Product> actualProduct = proxyProductRepository.selectProduct(product);
+        Product actualProduct = proxyProductRepository.selectProduct(product);
 
-        assertThat(actualProduct).isNotEmpty();
+        assertThat(actualProduct).isNotNull();
     }
 }

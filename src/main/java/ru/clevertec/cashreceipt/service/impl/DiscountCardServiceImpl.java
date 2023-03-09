@@ -59,6 +59,12 @@ public class DiscountCardServiceImpl implements DiscountCardService {
             throw new InvalidInputException(String.format(GIVEN_ID_IS_NOT_VALID, id));
         }
         Long discountCardId = Long.parseLong(id);
+        DiscountCard foundCardById = discountCardRepository.selectById(discountCardId);
+        if (foundCardById == null) {
+            throw new EntityNotFoundException(
+                    String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, discountCardId)
+            );
+        }
         return discountCardRepository.selectById(discountCardId);
     }
 }
