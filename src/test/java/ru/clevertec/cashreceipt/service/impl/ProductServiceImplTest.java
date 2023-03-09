@@ -14,6 +14,7 @@ import ru.clevertec.cashreceipt.entity.CashReceiptProduct;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
+import ru.clevertec.cashreceipt.exception.EntityAlreadyExistsException;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
 import ru.clevertec.cashreceipt.repository.proxy.ProxyProductRepository;
@@ -32,8 +33,11 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.PRODUCT_BY_GIVEN_ID_NOT_FOUND;
+import static ru.clevertec.cashreceipt.exception.ExceptionMessage.PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS;
 
 @DataJpaTest
 class ProductServiceImplTest {
@@ -52,6 +56,105 @@ class ProductServiceImplTest {
     @AfterEach
     void tearDown() throws Exception {
         autoCloseable.close();
+    }
+
+    @Nested
+    class AddProductTest {
+
+        @Test
+        void checkShouldAddProduct() {
+            Product product = ProductTestBuilder.aProduct().build();
+
+            doReturn(Optional.empty())
+                    .when(productRepository)
+                    .selectByName(product.getName());
+            doReturn(product)
+                    .when(productRepository)
+                    .save(product);
+
+            Product actualProduct = productService.addProduct(product);
+
+            assertThat(actualProduct).isEqualTo(product);
+        }
+
+        @Test
+        void checkAddProductShouldThrowEntityAlreadyExistsException() {
+            Product product = ProductTestBuilder.aProduct().build();
+
+            doReturn(Optional.of(product))
+                    .when(productRepository)
+                    .selectByName(product.getName());
+
+            assertThatThrownBy(() -> productService.addProduct(product))
+                    .isInstanceOf(EntityAlreadyExistsException.class)
+                    .hasMessage(PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS, product.getName());
+        }
+    }
+
+    @Nested
+    class UpdateProductTest {
+
+        @Test
+        void checkShouldUpdateProduct() {
+            Product newProduct = ProductTestBuilder.aProduct()
+                    .withName("Fish")
+                    .build();
+
+            doReturn(Optional.of(newProduct))
+                    .when(productRepository)
+                    .selectProduct(newProduct);
+            doReturn(newProduct)
+                    .when(productRepository)
+                    .update(newProduct);
+
+            Product actualProduct = productService.updateProduct(newProduct);
+
+            assertThat(actualProduct).isEqualTo(newProduct);
+        }
+
+        @Test
+        void checkUpdateProductShouldThrowEntityNotFoundException() {
+            Product product = ProductTestBuilder.aProduct().build();
+
+            doReturn(Optional.empty())
+                    .when(productRepository)
+                    .selectProduct(product);
+
+            assertThatThrownBy(() -> productService.updateProduct(product))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(PRODUCT_BY_GIVEN_ID_NOT_FOUND, product.getProductId());
+        }
+    }
+
+    @Nested
+    class RemoveProductByIdTest {
+
+        @Test
+        void checkShouldRemoveProductById() {
+            Product product = ProductTestBuilder.aProduct().build();
+            Long productId = product.getProductId();
+
+            doReturn(Optional.of(product))
+                    .when(productRepository)
+                    .selectById(productId);
+
+            productService.removeProductById(productId);
+
+            verify(productRepository).deleteById(productId);
+        }
+
+        @Test
+        void checkRemoveProductByIdShouldThrowEntityNotFoundException() {
+            Long productId = 1L;
+
+            doReturn(Optional.empty())
+                    .when(productRepository)
+                    .selectById(productId);
+
+            assertThatThrownBy(() -> productService.removeProductById(productId))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId);
+        }
     }
 
     @Nested
