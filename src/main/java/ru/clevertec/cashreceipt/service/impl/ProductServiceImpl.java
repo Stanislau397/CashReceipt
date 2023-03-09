@@ -34,14 +34,14 @@ public class ProductServiceImpl implements ProductService {
         String productName = product.getName();
         if (productRepository.selectByName(productName).isPresent()) {
             throw new EntityAlreadyExistsException(
-                    String.format(PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS, product)
+                    String.format(PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS, productName)
             );
         }
         return productRepository.save(product);
     }
 
     @Override
-    public void removeProduct(Long productId) {
+    public void removeProductById(Long productId) {
         if (productRepository.selectById(productId).isEmpty()) {
             throw new EntityNotFoundException(
                     String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId)
