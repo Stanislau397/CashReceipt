@@ -64,7 +64,7 @@ in resources folder.</h5>
 2. http://localhost:8080/discountCard/delete/1
 <img src="images/discount_delete.png">
 3. http://localhost:8080/discountCard/add
-<img src="images/add_discount.png">
+<img src="images/add_discount_card.png">
 4. http://localhost:8080/discountCard/155
 <img src="images/find_discount.png">
 <h5>Product: </h5>
