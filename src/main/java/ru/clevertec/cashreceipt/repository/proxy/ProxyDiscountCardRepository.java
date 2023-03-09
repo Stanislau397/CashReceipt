@@ -1,18 +1,19 @@
 package ru.clevertec.cashreceipt.repository.proxy;
 
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.cashreceipt.cache.Cache;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
-import ru.clevertec.cashreceipt.factory.CustomCashFactory;
 import ru.clevertec.cashreceipt.repository.impl.DiscountCardRepositoryImpl;
 
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
 
-    private Cache<DiscountCard> discountCardCache = new CustomCashFactory<DiscountCard>().create();
+    private final Cache<Long, DiscountCard> discountCardCache;
 
     @Override
     public DiscountCard save(DiscountCard discountCard) {
@@ -25,11 +26,9 @@ public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
     }
 
     @Override
-    public DiscountCard delete(DiscountCard discountCard) {
-        DiscountCard deletedCard = super.delete(discountCard);
-        Long cardId = deletedCard.getDiscountCardId();
-        discountCardCache.remove(cardId);
-        return deletedCard;
+    public void deleteById(Long discountCardId) {
+        super.deleteById(discountCardId);
+        discountCardCache.remove(discountCardId);
     }
 
     @Override
@@ -44,7 +43,6 @@ public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
     public Optional<DiscountCard> selectById(Long discountCardId) {
         Optional<DiscountCard> discountCardFromCache = discountCardCache.get(discountCardId);
         if (discountCardFromCache.isPresent()) {
-            System.out.println("DiscountCard");
             return discountCardFromCache;
         }
         Optional<DiscountCard> discountCardFromRepository = super.selectById(discountCardId);

@@ -1,12 +1,19 @@
 package ru.clevertec.cashreceipt.cache;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.Optional;
 
-public interface Cache<T> {
+@Component
+@Scope("prototype")
+public interface Cache<K, V> {
 
-    void put(Long key, T value);
 
-    Optional<T> get(Long key);
+    void put(K key, V value);
 
-    void remove(Long key);
+    void remove(K key);
+
+    Optional<V> get(K key);
+
 }
