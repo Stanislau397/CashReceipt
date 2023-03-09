@@ -1,5 +1,6 @@
 package ru.clevertec.cashreceipt.service.impl;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
@@ -15,14 +16,10 @@ import static ru.clevertec.cashreceipt.exception.ExceptionMessage.DISCOUNT_CARD_
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.GIVEN_ID_IS_NOT_VALID;
 
 @Service
+@AllArgsConstructor
 public class DiscountCardServiceImpl implements DiscountCardService {
 
     private final ProxyDiscountCardRepository discountCardRepository;
-
-    @Autowired
-    public DiscountCardServiceImpl(ProxyDiscountCardRepository proxyDiscountCardRepository) {
-        this.discountCardRepository = proxyDiscountCardRepository;
-    }
 
     @Override
     public DiscountCard addDiscountCard(DiscountCard discountCard) {
