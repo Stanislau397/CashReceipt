@@ -65,17 +65,17 @@ class ProductRepositoryTest {
         assertThat(actualProduct).isNotEqualTo(product);
     }
 
-//    @Test
-//    void checkDeleteProductShouldBeEmpty() {
-//        Product product = ProductTestBuilder.aProduct().build();
-//
-//        Product savedProduct = productRepository.save(product);
-//        productRepository.deleteById(savedProduct);
-//
-//        Optional<Product> actualProduct = productRepository.selectById(savedProduct.getProductId());
-//
-//        assertThat(actualProduct).isEmpty();
-//    }
+    @Test
+    void checkDeleteProductShouldBeEmpty() {
+        Product product = ProductTestBuilder.aProduct().build();
+        Long productId = product.getProductId();
+
+        productRepository.deleteById(productId);
+
+        Optional<Product> actualProduct = productRepository.selectById(productId);
+
+        assertThat(actualProduct).isEmpty();
+    }
 
     @Nested
     class SelectProductByIdTest {
