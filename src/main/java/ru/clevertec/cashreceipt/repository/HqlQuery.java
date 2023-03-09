@@ -14,7 +14,7 @@ public class HqlQuery {
             "SELECT p FROM Product p " +
                     "WHERE p.name = ?1";
     public static final String SELECT_PRODUCT =
-            "SELECT p FROM Product p" +
+            "SELECT p FROM Product p " +
                     "WHERE p = ?1";
     public static final String DELETE_PRODUCT_BY_ID =
             "DELETE FROM Product p " +
