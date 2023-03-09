@@ -44,7 +44,7 @@ in resources folder.</h5>
 <p style="color: black; margin-top: -20px; margin-left: 20px">capacity: 100</p>
 <p style="color: black; margin-top: -20px; margin-left: 20px">algorithm: LRUCache</p>
 </div>
-<h5>3. Added proxy pattern for repository</h5>
+<h3>3. Added proxy pattern for repository</h3>
 
 * Save - saves an object to database then saves it to cache.
   <br>
@@ -76,7 +76,6 @@ in resources folder.</h5>
 <img src="images/update_product.png">
 8. http://localhost:8080/products/1
 <img src="images/find_product.png">
-
 
 
 
