@@ -66,7 +66,7 @@ class DiscountCardRepositoryTest {
         DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
 
         DiscountCard savedCard = discountCardRepository.save(discountCard);
-        discountCardRepository.delete(savedCard);
+        discountCardRepository.deleteById(savedCard.getDiscountCardId());
 
         Optional<DiscountCard> actualDiscountCard = discountCardRepository.selectById(savedCard.getDiscountCardId());
 
