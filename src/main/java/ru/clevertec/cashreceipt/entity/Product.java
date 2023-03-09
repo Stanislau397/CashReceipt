@@ -1,5 +1,8 @@
 package ru.clevertec.cashreceipt.entity;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -12,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
@@ -21,6 +25,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -31,9 +36,12 @@ public class Product {
     @Column(name = "product_id")
     private Long productId;
 
+    @Pattern(regexp = "^([A-Z])([a-z_ \\\"]+)$")
     @Column(name = "name")
     private String name;
 
+    @NotNull
+    @DecimalMin(value = "1.0")
     @Column(name = "price")
     private BigDecimal price;
 

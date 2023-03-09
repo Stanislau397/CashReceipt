@@ -11,6 +11,12 @@ import java.util.Map;
 
 public interface ProductService {
 
+    Product addProduct(Product product);
+
+    void removeProductById(Long productId);
+
+    Product updateProduct(Product product);
+
     Product findProductById(Long productId);
 
     List<CashReceiptProduct> buildCashReceiptProductsByProductIdAndQuantity(Map<Long, Integer> productIdAndQuantityMap);

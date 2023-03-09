@@ -6,8 +6,9 @@ import ru.clevertec.cashreceipt.entity.CashReceiptProduct;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
+import ru.clevertec.cashreceipt.exception.EntityAlreadyExistsException;
 import ru.clevertec.cashreceipt.exception.EntityNotFoundException;
-import ru.clevertec.cashreceipt.repository.ProductRepository;
+import ru.clevertec.cashreceipt.repository.proxy.ProxyProductRepository;
 import ru.clevertec.cashreceipt.service.ProductService;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.clevertec.cashreceipt.exception.ExceptionMessage.PRODUCT_BY_GIVEN_ID_NOT_FOUND;
+import static ru.clevertec.cashreceipt.exception.ExceptionMessage.PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS;
 
 @Service
 @AllArgsConstructor
@@ -25,7 +27,38 @@ public class ProductServiceImpl implements ProductService {
     private static final Integer DISCOUNT_PERCENT = 10;
     private static final Integer FIVE_PRODUCTS = 5;
     private static final Integer ONE_HUNDRED = 100;
-    private final ProductRepository productRepository;
+    private final ProxyProductRepository productRepository;
+
+    @Override
+    public Product addProduct(Product product) {
+        String productName = product.getName();
+        if (productRepository.selectByName(productName).isPresent()) {
+            throw new EntityAlreadyExistsException(
+                    String.format(PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS, productName)
+            );
+        }
+        return productRepository.save(product);
+    }
+
+    @Override
+    public void removeProductById(Long productId) {
+        if (productRepository.selectById(productId).isEmpty()) {
+            throw new EntityNotFoundException(
+                    String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId)
+            );
+        }
+        productRepository.deleteById(productId);
+    }
+
+    @Override
+    public Product updateProduct(Product product) {
+        if (productRepository.selectProduct(product).isEmpty()) {
+            throw new EntityNotFoundException(
+                    String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, product.getProductId())
+            );
+        }
+        return productRepository.update(product);
+    }
 
     @Override
     public Product findProductById(Long productId) {

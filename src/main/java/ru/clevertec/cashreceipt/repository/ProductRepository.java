@@ -1,17 +1,26 @@
 package ru.clevertec.cashreceipt.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.cashreceipt.entity.Product;
 
 import java.util.Optional;
 
-import static ru.clevertec.cashreceipt.repository.HqlQuery.SELECT_PRODUCT_BY_ID;
-
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository {
 
-    @Query(SELECT_PRODUCT_BY_ID)
+    @Transactional
+    Product save(Product product);
+
+    @Transactional
+    Product update(Product product);
+
+    @Transactional
+    void deleteById(Long productId);
+
+    Optional<Product> selectByName(String name);
+
     Optional<Product> selectById(Long productId);
+
+    Optional<Product> selectProduct(Product product);
 }
