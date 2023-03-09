@@ -1,54 +1,48 @@
 package ru.clevertec.cashreceipt.repository.proxy;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import ru.clevertec.cashreceipt.cache.Cache;
 import ru.clevertec.cashreceipt.entity.Product;
-import ru.clevertec.cashreceipt.repository.impl.ProductRepositoryImpl;
+import ru.clevertec.cashreceipt.repository.ProductRepository;
 
 import java.util.Optional;
 
 @Repository
-@AllArgsConstructor
-public class ProxyProductRepository extends ProductRepositoryImpl {
+public class ProxyProductRepository implements ProductRepository {
 
-    private final Cache<Long, Product> productCache;
+    private final ProductRepository productRepository;
+
+    public ProxyProductRepository(@Qualifier("createProductRepository") ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     @Override
     public Product save(Product product) {
-        Product savedProduct = super.save(product);
-        Long productId = savedProduct.getProductId();
-        if (productCache.get(productId).isEmpty()) {
-            productCache.put(productId, savedProduct);
-        }
-        return savedProduct;
+        return productRepository.save(product);
     }
 
     @Override
     public Product update(Product product) {
-        Product updatedProduct = super.update(product);
-        Long productId = updatedProduct.getProductId();
-        productCache.put(productId, updatedProduct);
-        return updatedProduct;
+        return productRepository.update(product);
     }
 
     @Override
     public void deleteById(Long productId) {
-        super.deleteById(productId);
-        productCache.remove(productId);
+        productRepository.deleteById(productId);
+    }
+
+    @Override
+    public Optional<Product> selectByName(String name) {
+        return productRepository.selectByName(name);
     }
 
     @Override
     public Optional<Product> selectById(Long productId) {
-        Optional<Product> productFromCache = productCache.get(productId);
-        if (productFromCache.isPresent()) {
-            return productFromCache;
-        }
-        Optional<Product> productFromRepository = super.selectById(productId);
-        if (productFromRepository.isPresent()) {
-            Product product = productFromRepository.get();
-            productCache.put(productId, product);
-        }
-        return productFromRepository;
+        return productRepository.selectById(productId);
+    }
+
+    @Override
+    public Optional<Product> selectProduct(Product product) {
+        return productRepository.selectProduct(product);
     }
 }
