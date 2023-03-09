@@ -57,7 +57,7 @@ in resources folder.</h3>
   *Name must start with the capital letter.
 <br>
   *Name must not have any special characters except (")
-<h3>Added new end points</h3>
+<h3>5. Added new end points</h3>
 <h5>DiscountCard: </h5>
 1.http://localhost:8080/discountCard/update
 <img src="images/discount_updatepng.png" wid>
