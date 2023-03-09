@@ -1,0 +1,20 @@
+cache:
+  capacity: 100
+  algorithm: LRUCache
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: Ldkjs397
+    url: jdbc:postgresql://localhost:5432/task
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+    database: postgresql
+  sql:
+    init:
+      mode:
+      platform: postgres
+      continue-on-error: true
