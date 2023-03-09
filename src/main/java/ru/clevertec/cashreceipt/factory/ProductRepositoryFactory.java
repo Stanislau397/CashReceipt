@@ -18,7 +18,6 @@ public class ProductRepositoryFactory {
 
     @Bean
     public ProductRepository createProductRepository() {
-        System.out.println(entityManager);
         ProductRepository productRepository = new ProductRepositoryImpl(entityManager);
         ClassLoader productRepositoryClassLoader = productRepository.getClass().getClassLoader();
         Class<?>[] productRepositoryInterfaces = productRepository.getClass().getInterfaces();
