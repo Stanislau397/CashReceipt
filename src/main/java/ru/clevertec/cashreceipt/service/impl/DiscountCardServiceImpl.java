@@ -24,7 +24,7 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     @Override
     public DiscountCard addDiscountCard(DiscountCard discountCard) {
         Long cardId = discountCard.getDiscountCardId();
-        if (discountCardRepository.selectById(cardId).isPresent()) {
+        if (discountCardRepository.selectById(cardId) != null) {
             throw new EntityAlreadyExistsException(
                     String.format(DISCOUNT_CARD_BY_GIVEN_ID_ALREADY_EXISTS, cardId)
             );
@@ -35,7 +35,7 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     @Override
     public DiscountCard updateDiscountCard(DiscountCard discountCard) {
         Long cardId = discountCard.getDiscountCardId();
-        if (discountCardRepository.selectById(cardId).isEmpty()) {
+        if (discountCardRepository.selectById(cardId) == null) {
             throw new EntityNotFoundException(
                     String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, cardId)
             );
@@ -45,7 +45,7 @@ public class DiscountCardServiceImpl implements DiscountCardService {
 
     @Override
     public void removeDiscountCardById(Long discountCardId) {
-        if (discountCardRepository.selectById(discountCardId).isEmpty()) {
+        if (discountCardRepository.selectById(discountCardId) == null) {
             throw new EntityNotFoundException(
                     String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, discountCardId)
             );
@@ -59,9 +59,6 @@ public class DiscountCardServiceImpl implements DiscountCardService {
             throw new InvalidInputException(String.format(GIVEN_ID_IS_NOT_VALID, id));
         }
         Long discountCardId = Long.parseLong(id);
-        return discountCardRepository.selectById(discountCardId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(DISCOUNT_CARD_BY_GIVEN_ID_NOT_FOUND, discountCardId)
-                ));
+        return discountCardRepository.selectById(discountCardId);
     }
 }

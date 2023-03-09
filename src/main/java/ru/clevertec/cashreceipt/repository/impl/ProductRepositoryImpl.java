@@ -41,29 +41,32 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> selectByName(String name) {
+    public Product selectByName(String name) {
         return entityManager
                 .createQuery(SELECT_PRODUCT_BY_NAME, Product.class)
                 .setParameter(1, name)
                 .getResultStream()
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
-    public Optional<Product> selectById(Long productId) {
+    public Product selectById(Long productId) {
         return entityManager
                 .createQuery(SELECT_PRODUCT_BY_ID, Product.class)
                 .setParameter(1, productId)
                 .getResultStream()
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
-    public Optional<Product> selectProduct(Product product) {
+    public Product selectProduct(Product product) {
         return entityManager
                 .createQuery(SELECT_PRODUCT, Product.class)
                 .setParameter(1, product)
                 .getResultStream()
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 }

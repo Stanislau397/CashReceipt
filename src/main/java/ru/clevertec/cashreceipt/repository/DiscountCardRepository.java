@@ -18,5 +18,5 @@ public interface DiscountCardRepository {
     @Transactional
     DiscountCard update(DiscountCard discountCard);
 
-    Optional<DiscountCard> selectById(Long discountCardId);
+    DiscountCard selectById(Long discountCardId);
 }
