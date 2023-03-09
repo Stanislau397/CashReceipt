@@ -8,6 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The LRUCache represents an algorithm
+ * that takes least recently used value
+ * and removes it form cache
+ *
+ * @param <K> represents key
+ * @param <V> represents value
+ */
 @Getter
 public class LRUCache<K, V> implements Cache<K, V> {
 

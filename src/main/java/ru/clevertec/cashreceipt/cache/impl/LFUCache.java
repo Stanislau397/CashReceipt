@@ -8,12 +8,19 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * The LFUCache represents an algorithm
+ * that takes least frequently used value
+ * and removes it form cache
+ * @param <K> represents key
+ * @param <V> represents value
+ */
 @Getter
-public class LFUCache<K, T> implements Cache<K, T> {
+public class LFUCache<K, V> implements Cache<K, V> {
 
     private final int capacity;
     private int minFrequency;
-    private final Map<K, T> valuesMap;
+    private final Map<K, V> valuesMap;
     private final Map<K, Integer> keyFrequencyMap;
     private final Map<Integer, LinkedHashSet<K>> frequencyMap;
 
@@ -30,8 +37,8 @@ public class LFUCache<K, T> implements Cache<K, T> {
      * If provided key exists in LFUCache then increment its frequency
      */
     @Override
-    public Optional<T> get(K key) {
-        Optional<T> value = Optional.empty();
+    public Optional<V> get(K key) {
+        Optional<V> value = Optional.empty();
         if (!valuesMap.containsKey(key)) {
             return value;
         }
@@ -73,7 +80,7 @@ public class LFUCache<K, T> implements Cache<K, T> {
      * If LFUCache reached capacity, then remove the least frequently used key
      */
     @Override
-    public void put(K key, T value) {
+    public void put(K key, V value) {
         if (valuesMap.containsKey(key)) {
             valuesMap.put(key, value);
             get(key);
