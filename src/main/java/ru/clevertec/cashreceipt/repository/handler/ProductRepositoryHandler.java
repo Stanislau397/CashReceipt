@@ -1,6 +1,7 @@
 package ru.clevertec.cashreceipt.repository.handler;
 
 import ru.clevertec.cashreceipt.cache.Cache;
+import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.factory.CacheFactory;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
 
@@ -25,28 +26,37 @@ public class ProductRepositoryHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object invoke = method.invoke(productRepository, args);
-        if (SELECT_BY_ID.equals(method.getName())) {
-            Optional<Object> cacheProduct = productCache.get(args[0]);
-            if (cacheProduct.isPresent()) {
-                invoke = cacheProduct.get();
-            }
-            productCache.put(args[0], invoke);
-        }
+        if (invoke != null) {
 
-        if (SAVE.equals(method.getName())) {
-            if (productCache.get(args[0]).isEmpty()) {
-                productCache.put(args[0], invoke);
-            }
-        }
+            if (!Integer.class.isAssignableFrom(invoke.getClass())) {
 
-        if (DELETE_BY_ID.equals(method.getName())) {
-            if (productCache.get(args[0]).isPresent()) {
-                productCache.remove(invoke);
-            }
-        }
+                Product product = (Product) invoke;
+                Long productId = product.getProductId();
 
-        if (UPDATE.equals(method.getName())) {
-            productCache.put(args[0], invoke);
+                if (SELECT_BY_ID.equals(method.getName())) {
+                    Optional<Object> cacheProduct = productCache.get(productId);
+                    if (cacheProduct.isPresent()) {
+                        invoke = cacheProduct.get();
+                    }
+                    productCache.put(productId, invoke);
+                }
+
+                if (SAVE.equals(method.getName())) {
+                    if (productCache.get(productId).isEmpty()) {
+                        productCache.put(productId, invoke);
+                    }
+                }
+
+                if (DELETE_BY_ID.equals(method.getName())) {
+                    if (productCache.get(productId).isPresent()) {
+                        productCache.remove(productId);
+                    }
+                }
+
+                if (UPDATE.equals(method.getName())) {
+                    productCache.put(productId, invoke);
+                }
+            }
         }
         return invoke;
     }

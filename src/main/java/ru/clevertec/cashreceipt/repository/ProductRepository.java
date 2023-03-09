@@ -4,8 +4,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.cashreceipt.entity.Product;
 
-import java.util.Optional;
-
 @Repository
 public interface ProductRepository {
 
@@ -18,9 +16,9 @@ public interface ProductRepository {
     @Transactional
     void deleteById(Long productId);
 
-    Optional<Product> selectByName(String name);
+    Product selectByName(String name);
 
-    Optional<Product> selectById(Long productId);
+    Product selectById(Long productId);
 
-    Optional<Product> selectProduct(Product product);
+    Product selectProduct(Product product);
 }

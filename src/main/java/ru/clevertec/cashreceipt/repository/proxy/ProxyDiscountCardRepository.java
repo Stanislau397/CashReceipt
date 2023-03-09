@@ -32,7 +32,7 @@ public class ProxyDiscountCardRepository implements DiscountCardRepository {
     }
 
     @Override
-    public Optional<DiscountCard> selectById(Long discountCardId) {
+    public DiscountCard selectById(Long discountCardId) {
         return discountCardRepository.selectById(discountCardId);
     }
 }

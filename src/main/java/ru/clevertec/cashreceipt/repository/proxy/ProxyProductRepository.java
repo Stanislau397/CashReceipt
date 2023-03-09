@@ -5,8 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.repository.ProductRepository;
 
-import java.util.Optional;
-
 @Repository
 public class ProxyProductRepository implements ProductRepository {
 
@@ -32,17 +30,17 @@ public class ProxyProductRepository implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> selectByName(String name) {
+    public Product selectByName(String name) {
         return productRepository.selectByName(name);
     }
 
     @Override
-    public Optional<Product> selectById(Long productId) {
+    public Product selectById(Long productId) {
         return productRepository.selectById(productId);
     }
 
     @Override
-    public Optional<Product> selectProduct(Product product) {
+    public Product selectProduct(Product product) {
         return productRepository.selectProduct(product);
     }
 }

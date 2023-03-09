@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product addProduct(Product product) {
         String productName = product.getName();
-        if (productRepository.selectByName(productName).isPresent()) {
+        if (productRepository.selectByName(productName) != null) {
             throw new EntityAlreadyExistsException(
                     String.format(PRODUCT_BY_GIVEN_NAME_ALREADY_EXISTS, productName)
             );
@@ -42,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void removeProductById(Long productId) {
-        if (productRepository.selectById(productId).isEmpty()) {
+        if (productRepository.selectById(productId) == null) {
             throw new EntityNotFoundException(
                     String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId)
             );
@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Product product) {
-        if (productRepository.selectProduct(product).isEmpty()) {
+        if (productRepository.selectProduct(product) == null) {
             throw new EntityNotFoundException(
                     String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, product.getProductId())
             );
@@ -62,10 +62,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findProductById(Long productId) {
-        return productRepository.selectById(productId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId)
-                ));
+        Product foundProduct = productRepository.selectById(productId);
+        if (foundProduct == null) {
+            throw new EntityNotFoundException(
+                    String.format(PRODUCT_BY_GIVEN_ID_NOT_FOUND, productId)
+            );
+        }
+        return foundProduct;
     }
 
     @Override

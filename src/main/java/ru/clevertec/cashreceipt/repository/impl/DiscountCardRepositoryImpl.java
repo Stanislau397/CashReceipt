@@ -39,11 +39,12 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     }
 
     @Override
-    public Optional<DiscountCard> selectById(Long discountCardId) {
+    public DiscountCard selectById(Long discountCardId) {
         return entityManager
                 .createQuery(SELECT_DISCOUNT_CARD_BY_ID, DiscountCard.class)
                 .setParameter(1, discountCardId)
                 .getResultStream()
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 }
