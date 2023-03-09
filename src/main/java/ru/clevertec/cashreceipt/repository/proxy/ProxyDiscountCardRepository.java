@@ -1,55 +1,38 @@
 package ru.clevertec.cashreceipt.repository.proxy;
 
-
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import ru.clevertec.cashreceipt.cache.Cache;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
-import ru.clevertec.cashreceipt.repository.impl.DiscountCardRepositoryImpl;
+import ru.clevertec.cashreceipt.repository.DiscountCardRepository;
 
 import java.util.Optional;
 
 @Repository
-@AllArgsConstructor
-public class ProxyDiscountCardRepository extends DiscountCardRepositoryImpl {
+public class ProxyDiscountCardRepository implements DiscountCardRepository {
 
-    private final Cache<Long, DiscountCard> discountCardCache;
+    private final DiscountCardRepository discountCardRepository;
+
+    public ProxyDiscountCardRepository(@Qualifier("createDiscountCardRepository") DiscountCardRepository discountCardRepository) {
+        this.discountCardRepository = discountCardRepository;
+    }
 
     @Override
     public DiscountCard save(DiscountCard discountCard) {
-        DiscountCard savedCard = super.save(discountCard);
-        Long productId = savedCard.getDiscountCardId();
-        if (discountCardCache.get(productId).isEmpty()) {
-            discountCardCache.put(productId, savedCard);
-        }
-        return savedCard;
+        return discountCardRepository.save(discountCard);
     }
 
     @Override
     public void deleteById(Long discountCardId) {
-        super.deleteById(discountCardId);
-        discountCardCache.remove(discountCardId);
+        discountCardRepository.deleteById(discountCardId);
     }
 
     @Override
     public DiscountCard update(DiscountCard discountCard) {
-        DiscountCard updatedDiscountCard = super.update(discountCard);
-        Long discountCardId = updatedDiscountCard.getDiscountCardId();
-        discountCardCache.put(discountCardId, updatedDiscountCard);
-        return updatedDiscountCard;
+        return discountCardRepository.update(discountCard);
     }
 
     @Override
     public Optional<DiscountCard> selectById(Long discountCardId) {
-        Optional<DiscountCard> discountCardFromCache = discountCardCache.get(discountCardId);
-        if (discountCardFromCache.isPresent()) {
-            return discountCardFromCache;
-        }
-        Optional<DiscountCard> discountCardFromRepository = super.selectById(discountCardId);
-        if (discountCardFromRepository.isPresent()) {
-            DiscountCard discountCard = discountCardFromRepository.get();
-            discountCardCache.put(discountCardId, discountCard);
-        }
-        return discountCardFromRepository;
+        return discountCardRepository.selectById(discountCardId);
     }
 }
