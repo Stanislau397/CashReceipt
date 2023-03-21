@@ -1,18 +1,20 @@
 package ru.clevertec.cashreceipt.util;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.draw.VerticalPositionMark;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import ru.clevertec.cashreceipt.entity.CashReceipt;
@@ -23,13 +25,15 @@ import ru.clevertec.cashreceipt.entity.TotalPrice;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class PdfGenerator {
 
+    private static final String SUBSTRATE_PATH = "src/main/resources/static/pdf/Clevertec_Template.pdf";
     private static final String CASH_RECEIPT = "CASH RECEIPT";
     private static final String QUANTITY = "QTY";
     private static final String DESCRIPTION = "DESCRIPTION";
@@ -43,45 +47,51 @@ public class PdfGenerator {
     private static final String DATE_PATTERN = "dd/MM/yyyy";
     private static final String TIME_PATTERN = "HH:mm:ss";
     private static final String EMPTY_STRING = "";
+    private static final String SPACE = " ";
+    private static final String DASH = "-";
 
     private static final float TABLE_WIDTH = 100f;
-    private static final int DOCUMENT_WIDTH = 400;
-    private static final int DOCUMENT_HEIGHT = 700;
+    private static final float SPACING_BEFORE_TABLE = 20f;
+    private static final int TOTAL_PRICE_TABLE_COLUMNS = 2;
+    private static final int CASH_RECEIPT_PRODUCTS_TABLE_COLUMNS = 4;
 
     private static final int CELL_ONE_WIDTH = 6;
     private static final int CELL_TWO_WIDTH = 14;
     private static final int CELL_THREE_WIDTH = 10;
     private static final int CELL_FOUR_WIDTH = 7;
 
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-    private static final int FIVE = 5;
-    private static final int TWELVE = 12;
-    private static final int ELEVEN = 11;
+    private static final Paragraph EMPTY_PARAGRAPH = new Paragraph(100, "\u00a0");
 
-    private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.TIMES, TWELVE);
-    private static final Font TABLE_HEAD_FONT = FontFactory.getFont(FontFactory.TIMES, ELEVEN);
-    private static final Font TABLE_CELLS_FONT = FontFactory.getFont(FontFactory.TIMES, TWELVE);
-    private static final Font FOOTER_FONT = FontFactory.getFont(FontFactory.TIMES, TWELVE);
+    private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.TIMES, 15);
+    private static final Font TABLE_HEAD_FONT = FontFactory.getFont(FontFactory.TIMES, 14);
+    private static final Font TABLE_CELLS_FONT = FontFactory.getFont(FontFactory.TIMES, 14);
+    private static final Font FOOTER_FONT = FontFactory.getFont(FontFactory.TIMES, 14);
+
+    private static final Phrase SUBTOTAL_PHRASE = new Phrase(SUBTOTAL, FOOTER_FONT);
+    private static final Phrase DISCOUNT_FROM_CARD_PHRASE = new Phrase(DISCOUNT_FROM_CARD, FOOTER_FONT);
+    private static final Phrase TOTAL_PRICE_PHRASE = new Phrase(TOTAL, FOOTER_FONT);
 
     public void generate(CashReceipt cashReceipt, HttpServletResponse response) {
-        Rectangle rect = new Rectangle(DOCUMENT_WIDTH, DOCUMENT_HEIGHT);
-        Document document = new Document(rect);
+        Document document = new Document(PageSize.A4);
+        Supermarket supermarket = cashReceipt.getSupermarket();
+        LocalTime printTime = cashReceipt.getPrintTime();
+        LocalDate printDate = cashReceipt.getPrintDate();
+        List<CashReceiptProduct> cashReceiptProducts = cashReceipt.getCashReceiptProducts();
+        TotalPrice totalPrice = cashReceipt.getTotalPriceForProducts();
         try {
-            PdfWriter.getInstance(document, response.getOutputStream());
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, response.getOutputStream());
 
             document.open();
 
-            String currentDate = cashReceipt.getPrintDate().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
-            String currentTime = cashReceipt.getPrintTime().format(DateTimeFormatter.ofPattern(TIME_PATTERN));
-            List<CashReceiptProduct> cashReceiptProducts = cashReceipt.getCashReceiptProducts();
-            TotalPrice totalPriceForAllProducts = cashReceipt.getTotalPriceForProducts();
-            Supermarket supermarket = cashReceipt.getSupermarket();
+            PdfPTable headerTable = createHeaderTable(supermarket, printTime, printDate);
+            PdfPTable cashReceiptProductsTable = createTableForCashReceiptProducts(cashReceiptProducts);
+            PdfPTable totalPriceTable = createTotalPriceTable(totalPrice);
 
-            buildHeader(document, supermarket, currentDate, currentTime);
-            buildTable(document, cashReceiptProducts);
-            buildFooter(document, totalPriceForAllProducts);
+            addTemplateToPdf(pdfWriter);
+            document.add(EMPTY_PARAGRAPH);
+            document.add(headerTable);
+            document.add(cashReceiptProductsTable);
+            document.add(totalPriceTable);
         } catch (DocumentException | IOException e) {
 
         } finally {
@@ -89,104 +99,162 @@ public class PdfGenerator {
         }
     }
 
-    public void buildHeader(Document document, Supermarket supermarket, String currentDate, String currentTime) throws DocumentException {
-        Paragraph titleParagraph = new Paragraph(CASH_RECEIPT, HEADER_FONT);
-        Paragraph supermarketNameParagraph = new Paragraph(supermarket.getName(), HEADER_FONT);
-        Paragraph addressParagraph = new Paragraph(supermarket.getAddress(), HEADER_FONT);
-        Paragraph phoneNumberParagraph = new Paragraph(supermarket.getPhoneNumber(), HEADER_FONT);
-
-        titleParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-        supermarketNameParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-        addressParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-        phoneNumberParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-
-        document.add(titleParagraph);
-        document.add(supermarketNameParagraph);
-        document.add(addressParagraph);
-        document.add(phoneNumberParagraph);
-
-        Font fontForDateAndTime = FontFactory.getFont(FontFactory.TIMES, TWELVE);
-        Paragraph dateParagraph = new Paragraph(DATE + currentDate, fontForDateAndTime);
-        Paragraph timeParagraph = new Paragraph(TIME + currentTime, fontForDateAndTime);
-        dateParagraph.setAlignment(Element.ALIGN_RIGHT);
-        timeParagraph.setAlignment(Element.ALIGN_RIGHT);
-        timeParagraph.setSpacingAfter(TWELVE);
-        document.add(dateParagraph);
-        document.add(timeParagraph);
+    private void addTemplateToPdf(PdfWriter pdfWriter) throws IOException {
+        PdfContentByte contentByte = pdfWriter.getDirectContent();
+        PdfReader reader = new PdfReader(SUBSTRATE_PATH);
+        PdfImportedPage page = pdfWriter.getImportedPage(reader, 1);
+        contentByte.addTemplate(page, 0, 0);
     }
 
-    public void buildTable(Document document, List<CashReceiptProduct> cashReceiptProducts) throws DocumentException {
-        Paragraph tableParagraph = new Paragraph();
-        PdfPTable table = new PdfPTable(FOUR);
+    private PdfPTable createHeaderTable(Supermarket supermarket, LocalTime time, LocalDate date) {
+        PdfPTable pdfPTable = new PdfPTable(1);
+        pdfPTable.setWidthPercentage(TABLE_WIDTH);
 
-        table.setWidthPercentage(TABLE_WIDTH);
-        table.setWidths(new int[]{CELL_ONE_WIDTH, CELL_TWO_WIDTH, CELL_THREE_WIDTH, CELL_FOUR_WIDTH});
-        table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-        table.setHorizontalAlignment(Element.ALIGN_CENTER);
-        tableParagraph.add(table);
-        PdfPCell cell = new PdfPCell();
+        addSupermarketInfoToHeaderTable(supermarket, pdfPTable);
+        addTimeAndDateToHeaderTable(time, date, pdfPTable);
+        return pdfPTable;
+    }
 
-        cell.setBorder(Rectangle.NO_BORDER);
+    private void addSupermarketInfoToHeaderTable(Supermarket supermarket, PdfPTable headerTable) {
+        PdfPCell pdfPCell = new PdfPCell();
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        pdfPCell.setBorder(Rectangle.NO_BORDER);
 
-        cell.setPaddingBottom(FIVE);
-        cell.setPaddingRight(THREE);
-        cell.setPhrase(new Phrase(QUANTITY, TABLE_HEAD_FONT));
-        table.addCell(cell);
-        cell.setPhrase(new Phrase(DESCRIPTION, TABLE_HEAD_FONT));
-        table.addCell(cell);
-        cell.setPhrase(new Phrase(PRICE, TABLE_HEAD_FONT));
-        table.addCell(cell);
-        cell.setPhrase(new Phrase(TOTAL, TABLE_HEAD_FONT));
-        table.addCell(cell);
+        pdfPCell.setPhrase(new Phrase(CASH_RECEIPT, HEADER_FONT));
+        headerTable.addCell(pdfPCell);
 
-        cashReceiptProducts.forEach(o -> {
-            Product product = o.getProduct();
-            TotalPrice total = o.getTotalPrice();
-            table.addCell(new Phrase(String.valueOf(o.getQuantity()), PdfGenerator.TABLE_CELLS_FONT));
-            table.addCell(new Phrase(product.getName(), TABLE_CELLS_FONT));
-            table.addCell(new Phrase(DOLLAR_SIGN + product.getPrice(), TABLE_CELLS_FONT));
-            table.addCell(new Phrase(" " + DOLLAR_SIGN + total.getItemTotal(), TABLE_CELLS_FONT));
-            if (!Objects.equals(total.getDiscount(), BigDecimal.ZERO)) {
-                table.addCell(EMPTY_STRING);
-                table.addCell(EMPTY_STRING);
-                table.addCell(EMPTY_STRING);
-                table.addCell(new Phrase("-" + DOLLAR_SIGN + total.getDiscount(), TABLE_CELLS_FONT));
+        pdfPCell.setPhrase(new Phrase(supermarket.getName(), HEADER_FONT));
+        headerTable.addCell(pdfPCell);
+
+        pdfPCell.setPhrase(new Phrase(supermarket.getAddress(), HEADER_FONT));
+        headerTable.addCell(pdfPCell);
+
+        pdfPCell.setPhrase(new Phrase(supermarket.getPhoneNumber(), HEADER_FONT));
+        headerTable.addCell(pdfPCell);
+    }
+
+    private void addTimeAndDateToHeaderTable(LocalTime time, LocalDate date, PdfPTable headerTable) {
+        String formattedDate = date.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
+        String formattedTime = time.format(DateTimeFormatter.ofPattern(TIME_PATTERN));
+
+        PdfPCell pdfPCell = new PdfPCell();
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        pdfPCell.setBorder(Rectangle.NO_BORDER);
+
+        pdfPCell.setPhrase(new Phrase(DATE.concat(formattedDate), HEADER_FONT));
+        headerTable.addCell(pdfPCell);
+
+        pdfPCell.setPhrase(new Phrase(TIME.concat(formattedTime), HEADER_FONT));
+        headerTable.addCell(pdfPCell);
+    }
+
+    private PdfPTable createTableForCashReceiptProducts(List<CashReceiptProduct> cashReceiptProducts) throws DocumentException {
+        PdfPTable cashReceiptProductsTable = new PdfPTable(CASH_RECEIPT_PRODUCTS_TABLE_COLUMNS);
+        cashReceiptProductsTable.setSpacingBefore(SPACING_BEFORE_TABLE);
+        cashReceiptProductsTable.setWidthPercentage(TABLE_WIDTH);
+        cashReceiptProductsTable.setWidths(new int[]{CELL_ONE_WIDTH, CELL_TWO_WIDTH, CELL_THREE_WIDTH, CELL_FOUR_WIDTH});
+        cashReceiptProductsTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        cashReceiptProductsTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+        addHeaderCellForCashReceiptProductsTable(cashReceiptProductsTable);
+        addCashReceiptProductsIntoTable(cashReceiptProducts, cashReceiptProductsTable);
+
+        return cashReceiptProductsTable;
+    }
+
+    private void addHeaderCellForCashReceiptProductsTable(PdfPTable cashReceiptProductsTable) {
+        PdfPCell pdfPCell = new PdfPCell();
+        pdfPCell.setBorder(Rectangle.NO_BORDER);
+
+        pdfPCell.setPhrase(new Phrase(QUANTITY, TABLE_HEAD_FONT));
+        cashReceiptProductsTable.addCell(pdfPCell);
+
+        pdfPCell.setPhrase(new Phrase(DESCRIPTION, TABLE_HEAD_FONT));
+        cashReceiptProductsTable.addCell(pdfPCell);
+
+        pdfPCell.setPhrase(new Phrase(PRICE, TABLE_HEAD_FONT));
+        cashReceiptProductsTable.addCell(pdfPCell);
+
+        pdfPCell.setPhrase(new Phrase(TOTAL, TABLE_HEAD_FONT));
+        cashReceiptProductsTable.addCell(pdfPCell);
+    }
+
+    private void addCashReceiptProductsIntoTable(List<CashReceiptProduct> cashReceiptProducts, PdfPTable cashReceiptProductsTable) {
+        cashReceiptProducts.forEach(cashReceiptProduct -> {
+
+            Product product = cashReceiptProduct.getProduct();
+            TotalPrice totalPrice = cashReceiptProduct.getTotalPrice();
+            String quantity = String.valueOf(cashReceiptProduct.getQuantity());
+            String productName = product.getName();
+            String productPrice = DOLLAR_SIGN.concat(product.getPrice().toString());
+            String itemTotalPrice = SPACE.concat(DOLLAR_SIGN).concat(totalPrice.getItemTotal().toString());
+            String discount = DASH.concat(DOLLAR_SIGN).concat(totalPrice.getDiscount().toString());
+
+            cashReceiptProductsTable.addCell(new Phrase(quantity, TABLE_CELLS_FONT));
+            cashReceiptProductsTable.addCell(new Phrase(productName, TABLE_CELLS_FONT));
+            cashReceiptProductsTable.addCell(new Phrase(productPrice, TABLE_CELLS_FONT));
+            cashReceiptProductsTable.addCell(new Phrase(itemTotalPrice, TABLE_CELLS_FONT));
+
+            if (!BigDecimal.ZERO.equals(totalPrice.getDiscount())) {
+                cashReceiptProductsTable.addCell(EMPTY_STRING);
+                cashReceiptProductsTable.addCell(EMPTY_STRING);
+                cashReceiptProductsTable.addCell(EMPTY_STRING);
+                cashReceiptProductsTable.addCell(new Phrase(discount, TABLE_CELLS_FONT));
             }
         });
-        document.add(tableParagraph);
     }
 
-    public void buildFooter(Document document, TotalPrice totalPriceForAllProducts) throws DocumentException {
-        if (!totalPriceForAllProducts.getDiscount().equals(BigDecimal.ZERO)) {
-            Chunk spaceBetween = new Chunk(new VerticalPositionMark());
-            Paragraph priceWithoutDiscount = new Paragraph();
-            Paragraph discountForAllItems = new Paragraph();
-            Paragraph subtotalForAllItems = new Paragraph();
-
-            priceWithoutDiscount.add(new Phrase(SUBTOTAL, PdfGenerator.FOOTER_FONT));
-            priceWithoutDiscount.add(spaceBetween);
-            priceWithoutDiscount.add(new Phrase(DOLLAR_SIGN + totalPriceForAllProducts.getItemTotal(), FOOTER_FONT));
-
-            discountForAllItems.add(new Phrase(DISCOUNT_FROM_CARD, PdfGenerator.FOOTER_FONT));
-            discountForAllItems.add(spaceBetween);
-            discountForAllItems.add(new Phrase(DOLLAR_SIGN + totalPriceForAllProducts.getDiscount(), FOOTER_FONT));
-
-            subtotalForAllItems.add(new Phrase(TOTAL, PdfGenerator.FOOTER_FONT));
-            subtotalForAllItems.add(spaceBetween);
-            subtotalForAllItems.add(new Phrase(DOLLAR_SIGN + totalPriceForAllProducts.getSubtotal()));
-
-            priceWithoutDiscount.setExtraParagraphSpace(TWO);
-            document.add(priceWithoutDiscount);
-            document.add(discountForAllItems);
-            document.add(subtotalForAllItems);
+    private PdfPTable createTotalPriceTable(TotalPrice totalPrice) throws DocumentException {
+        PdfPTable totalPriceTable = new PdfPTable(TOTAL_PRICE_TABLE_COLUMNS);
+        totalPriceTable.setWidthPercentage(TABLE_WIDTH);
+        totalPriceTable.setSpacingBefore(SPACING_BEFORE_TABLE);
+        if (!BigDecimal.ZERO.equals(totalPrice.getDiscount())) {
+            addTotalPriceIntoTableWithDiscount(totalPrice, totalPriceTable);
         } else {
-            Chunk spaceBetween = new Chunk(new VerticalPositionMark());
-            Paragraph itemsTotalPrice = new Paragraph();
-            itemsTotalPrice.add(new Phrase(TOTAL, PdfGenerator.FOOTER_FONT));
-            itemsTotalPrice.add(spaceBetween);
-            itemsTotalPrice.add(new Phrase(DOLLAR_SIGN + totalPriceForAllProducts.getItemTotal(), FOOTER_FONT));
-            itemsTotalPrice.setExtraParagraphSpace(TWO);
-            document.add(itemsTotalPrice);
+            addTotalPriceIntoTableWithoutDiscount(totalPrice, totalPriceTable);
         }
+        return totalPriceTable;
+    }
+
+    private void addTotalPriceIntoTableWithDiscount(TotalPrice totalPrice, PdfPTable totalPriceTable) {
+        PdfPCell pdfPCell = new PdfPCell();
+        pdfPCell.setBorder(Rectangle.NO_BORDER);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        pdfPCell.setPhrase(SUBTOTAL_PHRASE);
+        totalPriceTable.addCell(pdfPCell);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getItemTotal().toString()), FOOTER_FONT));
+        totalPriceTable.addCell(pdfPCell);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        pdfPCell.setPhrase(DISCOUNT_FROM_CARD_PHRASE);
+        totalPriceTable.addCell(pdfPCell);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getDiscount().toString()), FOOTER_FONT));
+        totalPriceTable.addCell(pdfPCell);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        pdfPCell.setPhrase(TOTAL_PRICE_PHRASE);
+        totalPriceTable.addCell(pdfPCell);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getSubtotal().toString()), FOOTER_FONT));
+        totalPriceTable.addCell(pdfPCell);
+    }
+
+    private void addTotalPriceIntoTableWithoutDiscount(TotalPrice totalPrice, PdfPTable totalPriceTable) {
+        PdfPCell pdfPCell = new PdfPCell();
+        pdfPCell.setBorder(Rectangle.NO_BORDER);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        pdfPCell.setPhrase(TOTAL_PRICE_PHRASE);
+        totalPriceTable.addCell(pdfPCell);
+
+        pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getItemTotal().toString()), FOOTER_FONT));
+        totalPriceTable.addCell(pdfPCell);
     }
 }
