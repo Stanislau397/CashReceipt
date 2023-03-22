@@ -1,4 +1,4 @@
-package ru.clevertec.cashreceipt.util;
+package ru.clevertec.cashreceipt.service.impl;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -16,12 +16,13 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.clevertec.cashreceipt.entity.CashReceipt;
 import ru.clevertec.cashreceipt.entity.CashReceiptProduct;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.Supermarket;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
+import ru.clevertec.cashreceipt.service.CashReceiptPdfService;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,8 +31,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Component
-public class PdfGenerator {
+@Service
+public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
 
     private static final String SUBSTRATE_PATH = "src/main/resources/static/pdf/Clevertec_Template.pdf";
     private static final String CASH_RECEIPT = "CASH RECEIPT";
@@ -71,7 +72,8 @@ public class PdfGenerator {
     private static final Phrase DISCOUNT_FROM_CARD_PHRASE = new Phrase(DISCOUNT_FROM_CARD, FOOTER_FONT);
     private static final Phrase TOTAL_PRICE_PHRASE = new Phrase(TOTAL, FOOTER_FONT);
 
-    public void generate(CashReceipt cashReceipt, HttpServletResponse response) {
+    @Override
+    public void writeCashReceiptIntoResponseAsPdf(CashReceipt cashReceipt, HttpServletResponse response) {
         Document document = new Document(PageSize.A4);
         Supermarket supermarket = cashReceipt.getSupermarket();
         LocalTime printTime = cashReceipt.getPrintTime();
