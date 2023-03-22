@@ -16,12 +16,14 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import ru.clevertec.cashreceipt.entity.CashReceipt;
 import ru.clevertec.cashreceipt.entity.CashReceiptProduct;
 import ru.clevertec.cashreceipt.entity.Product;
 import ru.clevertec.cashreceipt.entity.Supermarket;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
+import ru.clevertec.cashreceipt.exception.PdfServiceException;
 import ru.clevertec.cashreceipt.service.CashReceiptPdfService;
 
 import java.io.IOException;
@@ -35,13 +37,6 @@ import java.util.List;
 public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
 
     private static final String SUBSTRATE_PATH = "src/main/resources/static/pdf/Clevertec_Template.pdf";
-    private static final String CASH_RECEIPT = "CASH RECEIPT";
-    private static final String QUANTITY = "QTY";
-    private static final String DESCRIPTION = "DESCRIPTION";
-    private static final String PRICE = "PRICE";
-    private static final String TOTAL = "TOTAL";
-    private static final String DISCOUNT_FROM_CARD = "DISCOUNT FROM CARD";
-    private static final String SUBTOTAL = "SUBTOTAL";
     private static final String DOLLAR_SIGN = "$";
     private static final String DATE = "DATE: ";
     private static final String TIME = "TIME: ";
@@ -56,9 +51,9 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
     private static final int TOTAL_PRICE_TABLE_COLUMNS = 2;
     private static final int CASH_RECEIPT_PRODUCTS_TABLE_COLUMNS = 4;
 
-    private static final int CELL_ONE_WIDTH = 6;
-    private static final int CELL_TWO_WIDTH = 14;
-    private static final int CELL_THREE_WIDTH = 10;
+    private static final int CELL_ONE_WIDTH = 10;
+    private static final int CELL_TWO_WIDTH = 16;
+    private static final int CELL_THREE_WIDTH = 12;
     private static final int CELL_FOUR_WIDTH = 7;
 
     private static final Paragraph EMPTY_PARAGRAPH = new Paragraph(100, "\u00a0");
@@ -68,11 +63,17 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
     private static final Font TABLE_CELLS_FONT = FontFactory.getFont(FontFactory.TIMES, 14);
     private static final Font FOOTER_FONT = FontFactory.getFont(FontFactory.TIMES, 14);
 
-    private static final Phrase SUBTOTAL_PHRASE = new Phrase(SUBTOTAL, FOOTER_FONT);
-    private static final Phrase DISCOUNT_FROM_CARD_PHRASE = new Phrase(DISCOUNT_FROM_CARD, FOOTER_FONT);
-    private static final Phrase TOTAL_PRICE_PHRASE = new Phrase(TOTAL, FOOTER_FONT);
+    private static final Phrase CASH_RECEIPT_PHRASE = new Phrase("CASH RECEIPT", HEADER_FONT);
+    private static final Phrase QUANTITY_PHRASE = new Phrase("QTY", TABLE_HEAD_FONT);
+    private static final Phrase PRICE_PHRASE = new Phrase("PRICE", TABLE_HEAD_FONT);
+    private static final Phrase TOTAL_PHRASE = new Phrase("TOTAL", TABLE_HEAD_FONT);
+    private static final Phrase DESCRIPTION_PHRASE = new Phrase("DESCRIPTION", TABLE_HEAD_FONT);
+    private static final Phrase SUBTOTAL_PHRASE = new Phrase("SUBTOTAL", FOOTER_FONT);
+    private static final Phrase DISCOUNT_FROM_CARD_PHRASE = new Phrase("DISCOUNT FROM CARD", FOOTER_FONT);
+    private static final Phrase TOTAL_PRICE_PHRASE = new Phrase("TOTAL", FOOTER_FONT);
 
     @Override
+    @SneakyThrows(PdfServiceException.class)
     public void writeCashReceiptIntoResponseAsPdf(CashReceipt cashReceipt, HttpServletResponse response) {
         Document document = new Document(PageSize.A4);
         Supermarket supermarket = cashReceipt.getSupermarket();
@@ -95,7 +96,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
             document.add(cashReceiptProductsTable);
             document.add(totalPriceTable);
         } catch (DocumentException | IOException e) {
-
+            throw new PdfServiceException(e.getMessage());
         } finally {
             document.close();
         }
@@ -122,7 +123,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 
-        pdfPCell.setPhrase(new Phrase(CASH_RECEIPT, HEADER_FONT));
+        pdfPCell.setPhrase(CASH_RECEIPT_PHRASE);
         headerTable.addCell(pdfPCell);
 
         pdfPCell.setPhrase(new Phrase(supermarket.getName(), HEADER_FONT));
@@ -168,16 +169,16 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 
-        pdfPCell.setPhrase(new Phrase(QUANTITY, TABLE_HEAD_FONT));
+        pdfPCell.setPhrase(QUANTITY_PHRASE);
         cashReceiptProductsTable.addCell(pdfPCell);
 
-        pdfPCell.setPhrase(new Phrase(DESCRIPTION, TABLE_HEAD_FONT));
+        pdfPCell.setPhrase(DESCRIPTION_PHRASE);
         cashReceiptProductsTable.addCell(pdfPCell);
 
-        pdfPCell.setPhrase(new Phrase(PRICE, TABLE_HEAD_FONT));
+        pdfPCell.setPhrase(PRICE_PHRASE);
         cashReceiptProductsTable.addCell(pdfPCell);
 
-        pdfPCell.setPhrase(new Phrase(TOTAL, TABLE_HEAD_FONT));
+        pdfPCell.setPhrase(TOTAL_PHRASE);
         cashReceiptProductsTable.addCell(pdfPCell);
     }
 
@@ -186,7 +187,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
 
             Product product = cashReceiptProduct.getProduct();
             TotalPrice totalPrice = cashReceiptProduct.getTotalPrice();
-            String quantity = String.valueOf(cashReceiptProduct.getQuantity());
+            String quantity = cashReceiptProduct.getQuantity().toString();
             String productName = product.getName();
             String productPrice = DOLLAR_SIGN.concat(product.getPrice().toString());
             String itemTotalPrice = SPACE.concat(DOLLAR_SIGN).concat(totalPrice.getItemTotal().toString());
@@ -222,12 +223,16 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 
+        String itemTotal = DOLLAR_SIGN.concat(totalPrice.getItemTotal().toString());
+        String discount = DOLLAR_SIGN.concat(totalPrice.getDiscount().toString());
+        String subtotal = DOLLAR_SIGN.concat(totalPrice.getSubtotal().toString());
+
         pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         pdfPCell.setPhrase(SUBTOTAL_PHRASE);
         totalPriceTable.addCell(pdfPCell);
 
         pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getItemTotal().toString()), FOOTER_FONT));
+        pdfPCell.setPhrase(new Phrase(itemTotal, FOOTER_FONT));
         totalPriceTable.addCell(pdfPCell);
 
         pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -235,7 +240,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         totalPriceTable.addCell(pdfPCell);
 
         pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getDiscount().toString()), FOOTER_FONT));
+        pdfPCell.setPhrase(new Phrase(discount, FOOTER_FONT));
         totalPriceTable.addCell(pdfPCell);
 
         pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -243,7 +248,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         totalPriceTable.addCell(pdfPCell);
 
         pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getSubtotal().toString()), FOOTER_FONT));
+        pdfPCell.setPhrase(new Phrase(subtotal, FOOTER_FONT));
         totalPriceTable.addCell(pdfPCell);
     }
 
@@ -251,12 +256,14 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 
+        String itemTotal = DOLLAR_SIGN.concat(totalPrice.getItemTotal().toString());
+
         pdfPCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         pdfPCell.setPhrase(TOTAL_PRICE_PHRASE);
         totalPriceTable.addCell(pdfPCell);
 
         pdfPCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        pdfPCell.setPhrase(new Phrase(DOLLAR_SIGN.concat(totalPrice.getItemTotal().toString()), FOOTER_FONT));
+        pdfPCell.setPhrase(new Phrase(itemTotal, FOOTER_FONT));
         totalPriceTable.addCell(pdfPCell);
     }
 }
