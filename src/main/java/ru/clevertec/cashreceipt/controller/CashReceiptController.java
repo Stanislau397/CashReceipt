@@ -28,13 +28,13 @@ public class CashReceiptController {
     private static final String CARD = "card";
     private static final String CHECK_URN = "/check";
 
-    private ItemsParser parametersParser;
-    private CashReceiptPdfService cashReceiptPdfService;
-    private ProductService productService;
-    private DiscountCardService discountCardService;
+    private final ItemsParser parametersParser;
+    private final CashReceiptPdfService cashReceiptPdfService;
+    private final ProductService productService;
+    private final DiscountCardService discountCardService;
 
     @GetMapping(CHECK_URN)
-    public void generatePdfFile(HttpServletRequest request, HttpServletResponse response) {
+    public void generateCashReceiptAsPdf(HttpServletRequest request, HttpServletResponse response) {
         String[] itemArray = request.getParameterValues(ITEM);
         String cardId = request.getParameter(CARD);
 
