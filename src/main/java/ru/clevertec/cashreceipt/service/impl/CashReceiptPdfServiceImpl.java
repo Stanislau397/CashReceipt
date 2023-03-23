@@ -1,5 +1,6 @@
 package ru.clevertec.cashreceipt.service.impl;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -57,6 +58,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
     private static final int CELL_FOUR_WIDTH = 7;
 
     private static final Paragraph EMPTY_PARAGRAPH = new Paragraph(100, "\u00a0");
+    private static final Chunk EMPTY_CHUNK = new Chunk("");
 
     private static final Font HEADER_FONT = FontFactory.getFont(FontFactory.TIMES, 15);
     private static final Font TABLE_HEAD_FONT = FontFactory.getFont(FontFactory.TIMES, 14);
@@ -85,6 +87,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
             PdfWriter pdfWriter = PdfWriter.getInstance(document, response.getOutputStream());
 
             document.open();
+            document.add(EMPTY_CHUNK);
 
             PdfPTable headerTable = createHeaderTable(supermarket, printTime, printDate);
             PdfPTable cashReceiptProductsTable = createTableForCashReceiptProducts(cashReceiptProducts);
@@ -102,14 +105,14 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         }
     }
 
-    private void addTemplateToPdf(PdfWriter pdfWriter) throws IOException {
+    public void addTemplateToPdf(PdfWriter pdfWriter) throws IOException {
         PdfContentByte contentByte = pdfWriter.getDirectContent();
         PdfReader reader = new PdfReader(SUBSTRATE_PATH);
         PdfImportedPage page = pdfWriter.getImportedPage(reader, 1);
         contentByte.addTemplate(page, 0, 0);
     }
 
-    private PdfPTable createHeaderTable(Supermarket supermarket, LocalTime time, LocalDate date) {
+    public PdfPTable createHeaderTable(Supermarket supermarket, LocalTime time, LocalDate date) {
         PdfPTable pdfPTable = new PdfPTable(1);
         pdfPTable.setWidthPercentage(TABLE_WIDTH);
 
@@ -118,7 +121,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         return pdfPTable;
     }
 
-    private void addSupermarketInfoToHeaderTable(Supermarket supermarket, PdfPTable headerTable) {
+    public void addSupermarketInfoToHeaderTable(Supermarket supermarket, PdfPTable headerTable) {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         pdfPCell.setBorder(Rectangle.NO_BORDER);
@@ -136,7 +139,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         headerTable.addCell(pdfPCell);
     }
 
-    private void addTimeAndDateToHeaderTable(LocalTime time, LocalDate date, PdfPTable headerTable) {
+    public void addTimeAndDateToHeaderTable(LocalTime time, LocalDate date, PdfPTable headerTable) {
         String formattedDate = date.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
         String formattedTime = time.format(DateTimeFormatter.ofPattern(TIME_PATTERN));
 
@@ -151,7 +154,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         headerTable.addCell(pdfPCell);
     }
 
-    private PdfPTable createTableForCashReceiptProducts(List<CashReceiptProduct> cashReceiptProducts) throws DocumentException {
+    public PdfPTable createTableForCashReceiptProducts(List<CashReceiptProduct> cashReceiptProducts) throws DocumentException {
         PdfPTable cashReceiptProductsTable = new PdfPTable(CASH_RECEIPT_PRODUCTS_TABLE_COLUMNS);
         cashReceiptProductsTable.setSpacingBefore(SPACING_BEFORE_TABLE);
         cashReceiptProductsTable.setWidthPercentage(TABLE_WIDTH);
@@ -165,7 +168,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         return cashReceiptProductsTable;
     }
 
-    private void addHeaderCellForCashReceiptProductsTable(PdfPTable cashReceiptProductsTable) {
+    public void addHeaderCellForCashReceiptProductsTable(PdfPTable cashReceiptProductsTable) {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 
@@ -182,7 +185,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         cashReceiptProductsTable.addCell(pdfPCell);
     }
 
-    private void addCashReceiptProductsIntoTable(List<CashReceiptProduct> cashReceiptProducts, PdfPTable cashReceiptProductsTable) {
+    public void addCashReceiptProductsIntoTable(List<CashReceiptProduct> cashReceiptProducts, PdfPTable cashReceiptProductsTable) {
         cashReceiptProducts.forEach(cashReceiptProduct -> {
 
             Product product = cashReceiptProduct.getProduct();
@@ -207,7 +210,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         });
     }
 
-    private PdfPTable createTotalPriceTable(TotalPrice totalPrice) throws DocumentException {
+    public PdfPTable createTotalPriceTable(TotalPrice totalPrice) throws DocumentException {
         PdfPTable totalPriceTable = new PdfPTable(TOTAL_PRICE_TABLE_COLUMNS);
         totalPriceTable.setWidthPercentage(TABLE_WIDTH);
         totalPriceTable.setSpacingBefore(SPACING_BEFORE_TABLE);
@@ -219,7 +222,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         return totalPriceTable;
     }
 
-    private void addTotalPriceIntoTableWithDiscount(TotalPrice totalPrice, PdfPTable totalPriceTable) {
+    public void addTotalPriceIntoTableWithDiscount(TotalPrice totalPrice, PdfPTable totalPriceTable) {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 
@@ -252,7 +255,7 @@ public class CashReceiptPdfServiceImpl implements CashReceiptPdfService {
         totalPriceTable.addCell(pdfPCell);
     }
 
-    private void addTotalPriceIntoTableWithoutDiscount(TotalPrice totalPrice, PdfPTable totalPriceTable) {
+    public void addTotalPriceIntoTableWithoutDiscount(TotalPrice totalPrice, PdfPTable totalPriceTable) {
         PdfPCell pdfPCell = new PdfPCell();
         pdfPCell.setBorder(Rectangle.NO_BORDER);
 

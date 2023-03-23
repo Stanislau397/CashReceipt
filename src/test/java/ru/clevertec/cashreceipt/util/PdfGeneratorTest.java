@@ -33,21 +33,21 @@ import static org.mockito.Mockito.verify;
 
 class PdfGeneratorTest {
 
-    private PdfGenerator pdfGenerator;
-    private Document document;
-
-    @BeforeEach
-    void setUp() {
-        document = new Document();
-        document.open();
-        pdfGenerator = Mockito.spy(new PdfGenerator());
-    }
-
-    @AfterEach
-    void tearDown() {
-        document.close();
-        pdfGenerator = null;
-    }
+//    private PdfGenerator pdfGenerator;
+//    private Document document;
+//
+//    @BeforeEach
+//    void setUp() {
+//        document = new Document();
+//        document.open();
+//        pdfGenerator = Mockito.spy(new PdfGenerator());
+//    }
+//
+//    @AfterEach
+//    void tearDown() {
+//        document.close();
+//        pdfGenerator = null;
+//    }
 
 
 //    @Nested
