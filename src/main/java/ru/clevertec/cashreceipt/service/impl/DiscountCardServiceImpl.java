@@ -1,7 +1,6 @@
 package ru.clevertec.cashreceipt.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.exception.EntityAlreadyExistsException;

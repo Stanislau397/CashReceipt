@@ -3,7 +3,6 @@ package ru.clevertec.cashreceipt.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.cashreceipt.entity.CashReceipt;
@@ -12,9 +11,9 @@ import ru.clevertec.cashreceipt.entity.DiscountCard;
 import ru.clevertec.cashreceipt.entity.Supermarket;
 import ru.clevertec.cashreceipt.entity.TotalPrice;
 import ru.clevertec.cashreceipt.parser.ItemsParser;
+import ru.clevertec.cashreceipt.service.CashReceiptPdfService;
 import ru.clevertec.cashreceipt.service.DiscountCardService;
 import ru.clevertec.cashreceipt.service.ProductService;
-import ru.clevertec.cashreceipt.util.PdfGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,13 +28,13 @@ public class CashReceiptController {
     private static final String CARD = "card";
     private static final String CHECK_URN = "/check";
 
-    private ItemsParser parametersParser;
-    private PdfGenerator pdfGenerator;
-    private ProductService productService;
-    private DiscountCardService discountCardService;
+    private final ItemsParser parametersParser;
+    private final CashReceiptPdfService cashReceiptPdfService;
+    private final ProductService productService;
+    private final DiscountCardService discountCardService;
 
     @GetMapping(CHECK_URN)
-    public void generatePdfFile(HttpServletRequest request, HttpServletResponse response) {
+    public void generateCashReceiptAsPdf(HttpServletRequest request, HttpServletResponse response) {
         String[] itemArray = request.getParameterValues(ITEM);
         String cardId = request.getParameter(CARD);
 
@@ -65,6 +64,6 @@ public class CashReceiptController {
                 .printTime(LocalTime.now())
                 .build();
 
-        pdfGenerator.generate(cashReceipt, response);
+        cashReceiptPdfService.writeCashReceiptIntoResponseAsPdf(cashReceipt, response);
     }
 }
